@@ -255,6 +255,12 @@ final featuredProductsProvider =
   return repo.fetchProducts(featuredOnly: true);
 });
 
+/// Provider fetching all products asynchronously
+final allProductsProvider = FutureProvider<List<ProductModel>>((ref) async {
+  final repo = ref.watch(catalogRepositoryProvider);
+  return repo.fetchProducts();
+});
+
 /// Reactive filtered products provider reflecting all active criteria in [catalogFilterProvider]
 final filteredProductsProvider =
     FutureProvider<List<ProductModel>>((ref) async {

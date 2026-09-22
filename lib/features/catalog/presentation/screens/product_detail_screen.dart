@@ -1374,7 +1374,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
                 side: const BorderSide(color: AppColors.primaryNavy),
-                shape: BorderRadius.circular(8.0),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
               ),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -1513,7 +1513,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     width: 160.0,
                     child: ProductCard(
                       product: prod,
-                      onTap: () => context.push('/product/${prod.productId}'),
+                      onTap: (p) => context.push('/product/${p.productId}'),
                     ),
                   );
                 },

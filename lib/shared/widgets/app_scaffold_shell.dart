@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import 'stationery_background.dart';
 
 /// Navigation item model for AppScaffoldShell.
 class NavigationTabItem {
@@ -92,13 +93,15 @@ class AppScaffoldShell extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppColors.backgroundSlate,
           appBar: shouldShowAppBar ? _buildAppBar(context, isDesktop) : null,
-          body: SafeArea(
-            top: !shouldShowAppBar,
-            bottom: false,
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 1200),
-                child: child,
+          body: StationeryBackground(
+            child: SafeArea(
+              top: !shouldShowAppBar,
+              bottom: false,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: child,
+                ),
               ),
             ),
           ),

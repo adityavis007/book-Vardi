@@ -1,0 +1,102 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions for security boundary enforcement
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        (request.auth.token.role == 'admin') ||
+        (getUserData().role == 'admin')
+      );
+    }
+
+    // 1. Product Catalog, Categories & Affiliated Schools: Public Read, Admin Write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /schools/{schoolId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 2. User Profiles & Sensitive Personal Data
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      // Customer Saved Delivery Addresses
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+
+      // Customer Shopping Cart Subcollection
+      match /cart/{cartItemId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Customer Wishlist Subcollection
+      match /wishlist/{productId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Customer Device Push Tokens for Notifications
+      match /fcmTokens/{token} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // 3. Orders Collection: Strict Customer Create & Ownership, Admin Status Mutations
+    match /orders/{orderId} {
+      // Any authenticated user can place an order for themselves
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+
+      // Customer can read only their own orders; Admins can view all orders
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Status progression & logistics mutations are strictly restricted to Admins
+      allow update: if isAdmin() || (
+        // Allow customer to cancel only if order is in initial pending state
+        isOwner(resource.data.userId) &&
+        resource.data.orderStatus == 'PENDING' &&
+        request.resource.data.orderStatus == 'CANCELLED' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['orderStatus', 'cancellationReason', 'updatedAt'])
+      );
+
+      // Hard deletions are blocked in production for audit compliance
+      allow delete: if false;
+    }
+
+    // 4. Admin Analytics & System Reports
+    match /analytics/{docId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Default deny all other paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "702169331097",
+    "project_id": "book-vardi",
+    "storage_bucket": "book-vardi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702169331097:android:da72ee6dfde639a9884f08",
+        "android_client_info": {
+          "package_name": "digi.coder.bookvardi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_-8ll6ZvHhHvtr8YcKFSJZwp6lKB9Xf0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

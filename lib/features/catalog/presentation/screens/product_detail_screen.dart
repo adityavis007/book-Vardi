@@ -1513,7 +1513,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
             const SizedBox(height: AppSpacing.sm),
             SizedBox(
-              height: 220.0,
+              height: 315.0,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 physics: const BouncingScrollPhysics(),

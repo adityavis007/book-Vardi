@@ -179,7 +179,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
                     // 3. Primary Home / Delivery Address Card
                     _buildAddressCard(),
-                    const SizedBox(height: 24.0),
+                    const SizedBox(height: 18.0),
 
                     // 4. Save Changes Action Button
                     _buildSaveButton(),
@@ -616,7 +616,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           ),
           const SizedBox(height: 8.0),
           Row(
-            children: ['Home', 'School', 'Work', 'Other'].map((tag) {
+            children: ['Home', 'School', 'Work'].map((tag) {
               final isSelected = _selectedAddressTag == tag;
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),

@@ -1227,10 +1227,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Icons.account_balance_wallet_rounded,
               color: Color(0xFF0F291E),
             ),
-            SizedBox(width: 8.0),
+            SizedBox(width: 6.0),
             Text(
               'Book Vardi Wallet',
-              style: TextStyle(fontWeight: FontWeight.w800),
+              style: TextStyle(fontWeight: FontWeight.w700),
             ),
           ],
         ),

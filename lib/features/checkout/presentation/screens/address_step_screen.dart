@@ -844,196 +844,201 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.88,
-        ),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Bottom Sheet Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Add Delivery Address',
-                    style: AppTypography.heading2.copyWith(
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              const Divider(),
-              const SizedBox(height: AppSpacing.sm),
-
-              // Scrollable Form Fields
-              Expanded(
-                child: ListView(
+      child: Material(
+        color: AppColors.surfaceWhite,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
+        elevation: 8.0,
+        child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.88,
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Bottom Sheet Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Address Type Segmented Chips
                     Text(
-                      'Address Type',
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.w600,
+                      'Add Delivery Address',
+                      style: AppTypography.heading2.copyWith(
                         color: AppColors.textDark,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      children: [
-                        _buildTypeChip('Home', Icons.home_outlined),
-                        const SizedBox(width: AppSpacing.sm),
-                        _buildTypeChip('School', Icons.school_outlined),
-                        const SizedBox(width: AppSpacing.sm),
-                        _buildTypeChip('Work', Icons.work_outline),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
-                    const SizedBox(height: AppSpacing.md),
+                  ],
+                ),
+                const Divider(),
+                const SizedBox(height: AppSpacing.sm),
 
-                    // Full Name
-                    CustomTextField(
-                      key: const Key('field_full_name'),
-                      label: 'Full Name *',
-                      hintText: 'e.g. Aditya Sharma',
-                      controller: _fullNameController,
-                      validator: AddressModel.validateFullName,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Phone Number
-                    CustomTextField(
-                      key: const Key('field_phone'),
-                      label: '10-Digit Mobile Number *',
-                      hintText: '9876543210',
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      validator: AddressModel.validatePhoneField,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // PIN Code with auto-lookup indicator
-                    CustomTextField(
-                      key: const Key('field_pincode'),
-                      label: 'PIN Code (6 digits) *',
-                      hintText: '122001',
-                      controller: _pincodeController,
-                      keyboardType: TextInputType.number,
-                      validator: AddressModel.validatePincodeField,
-                      suffixIcon: const Icon(
-                        Icons.pin_drop_outlined,
-                        color: AppColors.primaryNavy,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Address Line 1
-                    CustomTextField(
-                      key: const Key('field_address_line1'),
-                      label: 'Flat, House No., Building, Apartment *',
-                      hintText: 'Flat 402, Tower B, Royal Palms',
-                      controller: _addressLine1Controller,
-                      validator: (val) {
-                        if (val == null || val.trim().isEmpty) {
-                          return 'Please enter your address line 1';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Address Line 2
-                    CustomTextField(
-                      key: const Key('field_address_line2'),
-                      label: 'Area, Sector, Street, Village (Optional)',
-                      hintText: 'Sector 14, Near Golf Course Road',
-                      controller: _addressLine2Controller,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Landmark
-                    CustomTextField(
-                      key: const Key('field_landmark'),
-                      label: 'Landmark (Optional)',
-                      hintText: 'Near Huda City Centre Metro',
-                      controller: _landmarkController,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // City & State row
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomTextField(
-                            key: const Key('field_city'),
-                            label: 'City *',
-                            hintText: 'Gurugram',
-                            controller: _cityController,
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) {
-                                return 'Enter city';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: CustomTextField(
-                            key: const Key('field_state'),
-                            label: 'State *',
-                            hintText: 'Haryana',
-                            controller: _stateController,
-                            validator: (val) {
-                              if (val == null || val.trim().isEmpty) {
-                                return 'Enter state';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Set as Default switch
-                    SwitchListTile(
-                      key: const Key('switch_is_default'),
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        'Set as default delivery address',
+                // Scrollable Form Fields
+                Expanded(
+                  child: ListView(
+                    children: [
+                      // Address Type Segmented Chips
+                      Text(
+                        'Address Type',
                         style: AppTypography.caption.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textDark,
                         ),
                       ),
-                      value: _isDefault,
-                      activeColor: AppColors.primaryNavy,
-                      onChanged: (val) => setState(() => _isDefault = val),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                  ],
-                ),
-              ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Row(
+                        children: [
+                          _buildTypeChip('Home', Icons.home_outlined),
+                          const SizedBox(width: AppSpacing.sm),
+                          _buildTypeChip('School', Icons.school_outlined),
+                          const SizedBox(width: AppSpacing.sm),
+                          _buildTypeChip('Work', Icons.work_outline),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.md),
 
-              // Submit Button
-              CustomButton(
-                key: const Key('save_address_button'),
-                text: 'Save & Deliver to this Address',
-                isLoading: _isSubmitting,
-                onPressed: _submitAddress,
-              ),
-            ],
+                      // Full Name
+                      CustomTextField(
+                        key: const Key('field_full_name'),
+                        label: 'Full Name *',
+                        hintText: 'e.g. Aditya Sharma',
+                        controller: _fullNameController,
+                        validator: AddressModel.validateFullName,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Phone Number
+                      CustomTextField(
+                        key: const Key('field_phone'),
+                        label: '10-Digit Mobile Number *',
+                        hintText: '9876543210',
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        validator: AddressModel.validatePhoneField,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // PIN Code with auto-lookup indicator
+                      CustomTextField(
+                        key: const Key('field_pincode'),
+                        label: 'PIN Code (6 digits) *',
+                        hintText: '122001',
+                        controller: _pincodeController,
+                        keyboardType: TextInputType.number,
+                        validator: AddressModel.validatePincodeField,
+                        suffixIcon: const Icon(
+                          Icons.pin_drop_outlined,
+                          color: AppColors.primaryNavy,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Address Line 1
+                      CustomTextField(
+                        key: const Key('field_address_line1'),
+                        label: 'Flat, House No., Building, Apartment *',
+                        hintText: 'Flat 402, Tower B, Royal Palms',
+                        controller: _addressLine1Controller,
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Please enter your address line 1';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Address Line 2
+                      CustomTextField(
+                        key: const Key('field_address_line2'),
+                        label: 'Area, Sector, Street, Village (Optional)',
+                        hintText: 'Sector 14, Near Golf Course Road',
+                        controller: _addressLine2Controller,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Landmark
+                      CustomTextField(
+                        key: const Key('field_landmark'),
+                        label: 'Landmark (Optional)',
+                        hintText: 'Near Huda City Centre Metro',
+                        controller: _landmarkController,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // City & State row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomTextField(
+                              key: const Key('field_city'),
+                              label: 'City *',
+                              hintText: 'Gurugram',
+                              controller: _cityController,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return 'Enter city';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: CustomTextField(
+                              key: const Key('field_state'),
+                              label: 'State *',
+                              hintText: 'Haryana',
+                              controller: _stateController,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return 'Enter state';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+
+                      // Set as Default switch
+                      SwitchListTile(
+                        key: const Key('switch_is_default'),
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          'Set as default delivery address',
+                          style: AppTypography.caption.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        value: _isDefault,
+                        activeColor: AppColors.primaryNavy,
+                        onChanged: (val) => setState(() => _isDefault = val),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                    ],
+                  ),
+                ),
+
+                // Submit Button
+                CustomButton.accentBuyNow(
+                  key: const Key('save_address_button'),
+                  text: 'Save Address',
+                  isLoading: _isSubmitting,
+                  onPressed: _submitAddress,
+                ),
+              ],
+            ),
           ),
         ),
       ),

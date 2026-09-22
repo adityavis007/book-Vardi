@@ -15,6 +15,7 @@ import '../../domain/variant_model.dart';
 import 'package:book_vardi/features/cart/presentation/controllers/cart_controller.dart';
 import '../controllers/catalog_controller.dart';
 import '../widgets/variant_selector.dart';
+import '../widgets/product_card.dart';
 
 /// Product Detail Page (PDP) Layout conforming to PRD Section 4.2 & Design System Section 4.2.
 /// Includes 1:1 square gallery carousel with thumbnail strip, school badge, rating, pricing, and discount pills.
@@ -213,6 +214,33 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                     ],
 
+                    const SizedBox(height: AppSpacing.md),
+
+                    // Reward Points Notice Note
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryAmber.withValues(alpha: 0.1),
+                        borderRadius: AppSpacing.roundedSmall,
+                        border: Border.all(color: AppColors.secondaryAmber.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.stars_rounded, color: AppColors.secondaryAmber, size: 18.0),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              'Earn 80 Reward Points on this order for student stationery perks.',
+                              style: AppTypography.micro.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                     const SizedBox(height: AppSpacing.lg),
 
                     // Trust Badges Row
@@ -270,6 +298,20 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
 
                     // Section 5: Product Reviews
                     _buildProductReviewsSection(product),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    const Divider(height: 1.0, color: AppColors.borderGray),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Section 6: Recommended Kits & Bundles
+                    _buildRecommendedKitsSection(context, product),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Section 7: Grab Your School Kit Finder
+                    _buildSchoolKitFinderWidget(context),
 
                     const SizedBox(height: AppSpacing.xxl),
                   ],
@@ -1426,6 +1468,103 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildRecommendedKitsSection(BuildContext context, ProductModel currentProduct) {
+    final productsAsync = ref.watch(allProductsProvider);
+
+    return productsAsync.when(
+      data: (allProducts) {
+        final filtered = allProducts.where((p) => p.productId != currentProduct.productId).take(4).toList();
+        if (filtered.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Recommended Kits & Bundles',
+                  style: AppTypography.heading2.copyWith(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => context.push('/products'),
+                  child: const Text('View All ➔', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            SizedBox(
+              height: 220.0,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                itemCount: filtered.length,
+                separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.md),
+                itemBuilder: (context, index) {
+                  final prod = filtered[index];
+                  return SizedBox(
+                    width: 160.0,
+                    child: ProductCard(
+                      product: prod,
+                      onTap: () => context.push('/product/${prod.productId}'),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
+  Widget _buildSchoolKitFinderWidget(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.creamCardBg,
+        borderRadius: AppSpacing.roundedMedium,
+        border: Border.all(color: AppColors.creamCardBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.school_rounded, color: AppColors.primaryNavy, size: 22.0),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'Grab Your School Kit',
+                style: AppTypography.heading2.copyWith(
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryNavy,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            'Complete textbooks & uniforms for your school & grade.',
+            style: AppTypography.micro.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          CustomButton(
+            text: 'Find School Kit',
+            height: 40.0,
+            onPressed: () => context.push('/products'),
+          ),
+        ],
+      ),
     );
   }
 }

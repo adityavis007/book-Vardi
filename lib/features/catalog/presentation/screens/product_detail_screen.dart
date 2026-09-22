@@ -1175,7 +1175,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: 4.0),
       decoration: BoxDecoration(
         color: AppColors.backgroundSlate,
         borderRadius: AppSpacing.roundedMedium,
@@ -1185,34 +1185,43 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: badges.map((badge) {
           return Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  badge['icon'] as IconData,
-                  size: 20.0,
-                  color: AppColors.primaryNavy,
-                ),
-                const SizedBox(height: 4.0),
-                Text(
-                  badge['title'] as String,
-                  style: AppTypography.micro.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textDark,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    badge['icon'] as IconData,
+                    size: 20.0,
+                    color: AppColors.primaryNavy,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                ),
-                Text(
-                  badge['sub'] as String,
-                  style: AppTypography.micro.copyWith(
-                    fontSize: 9.0,
-                    color: AppColors.textSecondary,
+                  const SizedBox(height: 4.0),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      badge['title'] as String,
+                      style: AppTypography.micro.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                ),
-              ],
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      badge['sub'] as String,
+                      style: AppTypography.micro.copyWith(
+                        fontSize: 9.0,
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         }).toList(),
@@ -1433,7 +1442,10 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 2.0),
                           child: Row(
                             children: [
-                              Text('$star Stars', style: AppTypography.micro.copyWith(color: AppColors.textSecondary)),
+                              SizedBox(
+                                width: 44.0,
+                                child: Text('$star Stars', style: AppTypography.micro.copyWith(color: AppColors.textSecondary)),
+                              ),
                               const SizedBox(width: AppSpacing.sm),
                               Expanded(
                                 child: ClipRRect(

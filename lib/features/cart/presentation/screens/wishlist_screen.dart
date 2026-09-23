@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/stationery_background.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../auth/presentation/widgets/auth_modal_sheet.dart';
 import '../../domain/wishlist_item_model.dart';
@@ -100,7 +101,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     final wishlistItems = ref.watch(wishlistItemsListProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundSlate,
       appBar: AppBar(
         title: Text(
           isGuest || wishlistItems.isEmpty
@@ -116,11 +117,13 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
         scrolledUnderElevation: 0,
         iconTheme: const IconThemeData(color: AppColors.primaryNavy),
       ),
-      body: isGuest
-          ? _buildGuestState(context)
-          : (wishlistItems.isEmpty
-              ? _buildEmptyState(context)
-              : _buildWishlistGrid(context, wishlistItems)),
+      body: StationeryBackground(
+        child: isGuest
+            ? _buildGuestState(context)
+            : (wishlistItems.isEmpty
+                ? _buildEmptyState(context)
+                : _buildWishlistGrid(context, wishlistItems)),
+      ),
     );
   }
 

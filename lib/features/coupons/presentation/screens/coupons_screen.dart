@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/stationery_background.dart';
 
 class CouponModel {
   final String id;
@@ -109,7 +110,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundSlate,
       appBar: AppBar(
         backgroundColor: AppColors.surfaceWhite,
         elevation: 0,
@@ -133,8 +134,9 @@ class _CouponsScreenState extends State<CouponsScreen> {
           ),
         ),
       ),
-      body: Column(
-        children: [
+      body: StationeryBackground(
+        child: Column(
+          children: [
           // Top Header Banner styled with Book Vardi Theme (Deep Pine Green to Amber accents)
           Container(
             width: double.infinity,
@@ -293,6 +295,7 @@ class _CouponsScreenState extends State<CouponsScreen> {
             ),
           ),
         ],
+      ),
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(AppSpacing.md),

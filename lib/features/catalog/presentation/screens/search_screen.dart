@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/shimmer_loading.dart';
+import '../../../../shared/widgets/stationery_background.dart';
 import '../../data/catalog_repository.dart';
 import '../../domain/product_model.dart';
 import '../controllers/catalog_controller.dart';
@@ -93,9 +94,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final activeFilterCount = _calculateActiveFilterCount(filterState);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Column(
+      backgroundColor: AppColors.backgroundSlate,
+      body: StationeryBackground(
+        child: SafeArea(
+          child: Column(
           children: [
             // Accessible anchor for screen identification
             const SizedBox(
@@ -125,6 +127,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

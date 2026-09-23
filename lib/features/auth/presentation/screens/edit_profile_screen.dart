@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/stationery_background.dart';
 import '../../domain/user_model.dart';
 import '../controllers/auth_controller.dart';
 
@@ -158,36 +159,38 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
         centerTitle: false,
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Dark Green Profile Header
-              _buildDarkHeader(displayName, user),
+      body: StationeryBackground(
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Dark Green Profile Header
+                _buildDarkHeader(displayName, user),
 
-              // Form Cards
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                child: Column(
-                  children: [
-                    // 2. Personal Information Card
-                    _buildPersonalInfoCard(),
-                    const SizedBox(height: 18.0),
+                // Form Cards
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                  child: Column(
+                    children: [
+                      // 2. Personal Information Card
+                      _buildPersonalInfoCard(),
+                      const SizedBox(height: 18.0),
 
-                    // 3. Primary Home / Delivery Address Card
-                    _buildAddressCard(),
-                    const SizedBox(height: 18.0),
+                      // 3. Primary Home / Delivery Address Card
+                      _buildAddressCard(),
+                      const SizedBox(height: 18.0),
 
-                    // 4. Save Changes Action Button
-                    _buildSaveButton(),
-                    const SizedBox(height: 32.0),
-                  ],
+                      // 4. Save Changes Action Button
+                      _buildSaveButton(),
+                      const SizedBox(height: 32.0),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

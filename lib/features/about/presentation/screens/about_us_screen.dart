@@ -78,7 +78,7 @@ class AboutUsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildHeroBanner(BuildContext context) {
@@ -380,101 +380,109 @@ class AboutUsScreen extends StatelessWidget {
       {'icon': Icons.support_agent_rounded, 'title': 'Reliable Support', 'badge': '24/7'},
     ];
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-          decoration: BoxDecoration(
-            color: AppColors.categoryPillBg,
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Text(
-            'OUR PROMISES',
-            style: AppTypography.micro.copyWith(
-              color: AppColors.primaryNavy,
-              fontWeight: FontWeight.w800,
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceWhite,
+        borderRadius: AppSpacing.roundedMedium,
+        border: Border.all(color: AppColors.borderGray),
+        boxShadow: AppSpacing.elevationSm,
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              color: AppColors.categoryPillBg,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              'OUR PROMISES',
+              style: AppTypography.micro.copyWith(
+                color: AppColors.primaryNavy,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8.0),
-        Text(
-          'Values We Will Never Compromise On',
-          style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4.0),
-        Text(
-          'Every pencil, spiral notebook, and geometry box we ship carries these 4 pillars.',
-          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: values.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: AppSpacing.md,
-            mainAxisSpacing: AppSpacing.md,
-            childAspectRatio: 1.3,
+          const SizedBox(height: 8.0),
+          Text(
+            'Values We Will Never Compromise On',
+            style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
+            textAlign: TextAlign.center,
           ),
-          itemBuilder: (context, index) {
-            final val = values[index];
-            return Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceWhite,
-                borderRadius: AppSpacing.roundedMedium,
-                border: Border.all(color: AppColors.borderGray),
-                boxShadow: AppSpacing.elevationSm,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(val['icon'] as IconData, color: AppColors.primaryNavy, size: 22.0),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-                        decoration: BoxDecoration(
-                          color: AppColors.categoryPillBg,
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                        child: Text(
-                          val['badge'] as String,
-                          style: AppTypography.micro.copyWith(
-                            fontSize: 8.5,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.primaryNavy,
+          const SizedBox(height: 4.0),
+          Text(
+            'Every pencil, spiral notebook, and geometry box we ship carries these 4 pillars.',
+            style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: values.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
+              childAspectRatio: 1.3,
+            ),
+            itemBuilder: (context, index) {
+              final val = values[index];
+              return Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundSlate,
+                  borderRadius: AppSpacing.roundedSmall,
+                  border: Border.all(color: AppColors.borderGray),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(val['icon'] as IconData, color: AppColors.primaryNavy, size: 22.0),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                          decoration: BoxDecoration(
+                            color: AppColors.categoryPillBg,
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: Text(
+                            val['badge'] as String,
+                            style: AppTypography.micro.copyWith(
+                              fontSize: 8.5,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.primaryNavy,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                    Text(
+                      val['title'] as String,
+                      style: AppTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textDark,
+                        fontSize: 12.0,
                       ),
-                    ],
-                  ),
-                  Text(
-                    val['title'] as String,
-                    style: AppTypography.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textDark,
-                      fontSize: 12.0,
                     ),
-                  ),
-                  Text(
-                    'Book Vardi Certified ✓',
-                    style: AppTypography.micro.copyWith(
-                      color: AppColors.successGreen,
-                      fontWeight: FontWeight.w600,
+                    Text(
+                      'Book Vardi Certified ✓',
+                      style: AppTypography.micro.copyWith(
+                        color: AppColors.successGreen,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -497,49 +505,56 @@ class AboutUsScreen extends StatelessWidget {
       },
     ];
 
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
-          decoration: BoxDecoration(
-            color: AppColors.categoryPillBg,
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Text(
-            'PEOPLE BEHIND THE BRAND',
-            style: AppTypography.micro.copyWith(
-              color: AppColors.primaryNavy,
-              fontWeight: FontWeight.w800,
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceWhite,
+        borderRadius: AppSpacing.roundedMedium,
+        border: Border.all(color: AppColors.borderGray),
+        boxShadow: AppSpacing.elevationSm,
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              color: AppColors.categoryPillBg,
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Text(
+              'PEOPLE BEHIND THE BRAND',
+              style: AppTypography.micro.copyWith(
+                color: AppColors.primaryNavy,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8.0),
-        Text(
-          'Meet the Passionate Team',
-          style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
-        ),
-        const SizedBox(height: 4.0),
-        Text(
-          'Designers, educators, and stationery lovers obsessed with creating the best learning experience.',
-          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        ...team.map((member) => Container(
-              margin: const EdgeInsets.only(bottom: AppSpacing.md),
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceWhite,
-                borderRadius: AppSpacing.roundedMedium,
-                border: Border.all(color: AppColors.borderGray),
-                boxShadow: AppSpacing.elevationSm,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 52.0,
-                    height: 52.0,
-                    decoration: const BoxDecoration(
+          const SizedBox(height: 8.0),
+          Text(
+            'Meet the Passionate Team',
+            style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
+          ),
+          const SizedBox(height: 4.0),
+          Text(
+            'Designers, educators, and stationery lovers obsessed with creating the best learning experience.',
+            style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          ...team.map((member) => Container(
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.backgroundSlate,
+                  borderRadius: AppSpacing.roundedSmall,
+                  border: Border.all(color: AppColors.borderGray),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 52.0,
+                      height: 52.0,
+                      decoration: const BoxDecoration(
                       color: AppColors.categoryPillBg,
                       shape: BoxShape.circle,
                     ),
@@ -582,7 +597,8 @@ class AboutUsScreen extends StatelessWidget {
                 ],
               ),
             )),
-      ],
+        ],
+      ),
     );
   }
 

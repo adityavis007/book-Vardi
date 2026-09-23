@@ -93,7 +93,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final activeFilterCount = _calculateActiveFilterCount(filterState);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: Column(
           children: [

@@ -141,7 +141,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final bool isEmpty = cartItems.isEmpty;
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: AppColors.surfaceWhite,
         elevation: 0,

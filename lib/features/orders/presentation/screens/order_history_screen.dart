@@ -29,7 +29,7 @@ class OrderHistoryScreen extends ConsumerWidget {
     final ordersAsync = ref.watch(userOrdersStreamProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           'My Orders',
@@ -75,7 +75,7 @@ class OrderHistoryScreen extends ConsumerWidget {
 
   Widget _buildGuestGuardView(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           'My Orders',

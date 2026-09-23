@@ -100,7 +100,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> {
     final wishlistItems = ref.watch(wishlistItemsListProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
           isGuest || wishlistItems.isEmpty

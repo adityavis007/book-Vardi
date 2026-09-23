@@ -214,7 +214,7 @@ class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
     final wishlistIdSet = wishlistItems.map((item) => item.productId).toSet();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         color: AppColors.primaryNavy,
         onRefresh: () async {

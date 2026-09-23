@@ -256,7 +256,7 @@ class _CategoriesScreenState extends ConsumerState<CategoriesScreen> {
     final childAspectRatio = screenWidth > 600 ? 0.84 : 0.74;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.transparent,
       body: categoriesAsync.when(
         data: (categories) {
           final sourceList = categories.isNotEmpty

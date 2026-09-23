@@ -187,7 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundSlate,
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         color: AppColors.primaryNavy,
         onRefresh: _handleRefresh,

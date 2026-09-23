@@ -91,7 +91,7 @@ class AppScaffoldShell extends StatelessWidget {
         final bool shouldShowAppBar = showAppBar && isHomeTab;
 
         return Scaffold(
-          backgroundColor: AppColors.backgroundSlate,
+          backgroundColor: Colors.transparent,
           appBar: shouldShowAppBar ? _buildAppBar(context, isDesktop) : null,
           body: StationeryBackground(
             child: SafeArea(

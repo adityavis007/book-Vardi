@@ -407,58 +407,68 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildCategoryRailSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  'Shop by Category',
-                  style: AppTypography.heading2,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceWhite,
+        borderRadius: AppSpacing.roundedMedium,
+        border: Border.all(color: AppColors.borderGray, width: 1.0),
+        boxShadow: AppSpacing.elevationSm,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Shop by Category',
+                    style: AppTypography.heading2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (widget.onViewAllCategories != null) {
-                    widget.onViewAllCategories!();
-                  } else {
-                    context.go('/category');
-                  }
-                },
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  foregroundColor: AppColors.primaryNavy,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'View All',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.primaryNavy,
-                        fontWeight: FontWeight.w600,
+                TextButton(
+                  onPressed: () {
+                    if (widget.onViewAllCategories != null) {
+                      widget.onViewAllCategories!();
+                    } else {
+                      context.go('/category');
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    foregroundColor: AppColors.primaryNavy,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View All',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.primaryNavy,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      size: 16.0,
-                      color: AppColors.primaryNavy,
-                    ),
-                  ],
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 16.0,
+                        color: AppColors.primaryNavy,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        const CategoryQuickRail(showAllOption: true, allLabel: 'All'),
-      ],
+          const SizedBox(height: AppSpacing.xs),
+          const CategoryQuickRail(showAllOption: true, allLabel: 'All'),
+        ],
+      ),
     );
   }
 
@@ -682,19 +692,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Recommended Bundles', style: AppTypography.heading2),
-              const SizedBox(height: 2.0),
-              Text(
-                'Complete textbook & uniform kits curated for your session',
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 12.0,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceWhite,
+              borderRadius: AppSpacing.roundedSmall,
+              border: Border.all(color: AppColors.borderGray, width: 1.0),
+              boxShadow: AppSpacing.elevationSm,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Recommended Bundles', style: AppTypography.heading2),
+                const SizedBox(height: 2.0),
+                Text(
+                  'Complete textbook & uniform kits curated for your session',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 12.0,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(height: AppSpacing.sm),

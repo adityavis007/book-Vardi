@@ -34,7 +34,7 @@ class NotebookDoodlePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // 1. Draw subtle horizontal notebook lines
     final linePaint = Paint()
-      ..color = const Color(0xFFCBD5E1).withValues(alpha: 0.35)
+      ..color = const Color(0xFFCBD5E1).withValues(alpha: 0.20)
       ..strokeWidth = 0.8;
 
     const double lineSpacing = 24.0;
@@ -44,11 +44,11 @@ class NotebookDoodlePainter extends CustomPainter {
 
     // 2. Draw colorful pastel school doodles (backpack, bus, clock, scissors, etc.)
     final doodleColors = [
-      const Color(0xFF8B5CF6).withValues(alpha: 0.22), // Purple tint
-      const Color(0xFF0EA5E9).withValues(alpha: 0.22), // Blue tint
-      const Color(0xFFEC4899).withValues(alpha: 0.22), // Pink tint
-      const Color(0xFFF59E0B).withValues(alpha: 0.22), // Amber tint
-      const Color(0xFF10B981).withValues(alpha: 0.22), // Emerald tint
+      const Color(0xFF8B5CF6).withValues(alpha: 0.09), // Soft Purple tint
+      const Color(0xFF0EA5E9).withValues(alpha: 0.09), // Soft Blue tint
+      const Color(0xFFEC4899).withValues(alpha: 0.09), // Soft Pink tint
+      const Color(0xFFF59E0B).withValues(alpha: 0.09), // Soft Amber tint
+      const Color(0xFF10B981).withValues(alpha: 0.09), // Soft Emerald tint
     ];
 
     const double colSpacing = 140.0;

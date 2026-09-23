@@ -349,7 +349,7 @@ class CategoryQuickRail extends ConsumerWidget {
         parent: AlwaysScrollableScrollPhysics(),
       ),
       padding: padding,
-      clipBehavior: Clip.none,
+      clipBehavior: Clip.antiAlias,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

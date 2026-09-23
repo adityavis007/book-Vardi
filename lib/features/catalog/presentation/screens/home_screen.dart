@@ -410,6 +410,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.surfaceWhite,
         borderRadius: AppSpacing.roundedMedium,
@@ -466,7 +467,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
-          const CategoryQuickRail(showAllOption: true, allLabel: 'All'),
+          const CategoryQuickRail(
+            showAllOption: true,
+            allLabel: 'All',
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+          ),
         ],
       ),
     );
@@ -690,6 +695,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       padding: const EdgeInsets.all(AppSpacing.md),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.surfaceWhite,
         borderRadius: AppSpacing.roundedMedium,
@@ -717,7 +723,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics(),
                 ),
-                clipBehavior: Clip.none,
+                clipBehavior: Clip.antiAlias,
                 child: Row(
                   children: [
                     for (int i = 0; i < bundles.length; i++) ...[

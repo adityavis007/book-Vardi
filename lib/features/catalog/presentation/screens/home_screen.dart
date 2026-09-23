@@ -687,79 +687,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildRecommendedBundlesSection() {
     final bundlesAsync = ref.watch(recommendedBundlesProvider);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceWhite,
-              borderRadius: AppSpacing.roundedSmall,
-              border: Border.all(color: AppColors.borderGray, width: 1.0),
-              boxShadow: AppSpacing.elevationSm,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceWhite,
+        borderRadius: AppSpacing.roundedMedium,
+        border: Border.all(color: AppColors.borderGray, width: 1.0),
+        boxShadow: AppSpacing.elevationSm,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Recommended Bundles', style: AppTypography.heading2),
+          const SizedBox(height: 2.0),
+          Text(
+            'Complete textbook & uniform kits curated for your session',
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 12.0,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Recommended Bundles', style: AppTypography.heading2),
-                const SizedBox(height: 2.0),
-                Text(
-                  'Complete textbook & uniform kits curated for your session',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 12.0,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          bundlesAsync.when(
+            data: (bundles) {
+              if (bundles.isEmpty) return const SizedBox.shrink();
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                clipBehavior: Clip.none,
+                child: Row(
+                  children: [
+                    for (int i = 0; i < bundles.length; i++) ...[
+                      if (i > 0) const SizedBox(width: AppSpacing.md),
+                      ProductCard(
+                        width: 190.0,
+                        product: bundles[i],
+                        onTap: (prod) {
+                          widget.onProductTap?.call(prod);
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+            loading: () => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(
+                  3,
+                  (index) => const Padding(
+                    padding: EdgeInsets.only(right: AppSpacing.md),
+                    child: SizedBox(width: 190.0, child: ShimmerProductCard()),
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        bundlesAsync.when(
-          data: (bundles) {
-            if (bundles.isEmpty) return const SizedBox.shrink();
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              clipBehavior: Clip.none,
-              child: Row(
-                children: [
-                  for (int i = 0; i < bundles.length; i++) ...[
-                    if (i > 0) const SizedBox(width: AppSpacing.md),
-                    ProductCard(
-                      width: 200.0,
-                      product: bundles[i],
-                      onTap: (prod) {
-                        widget.onProductTap?.call(prod);
-                      },
-                    ),
-                  ],
-                ],
-              ),
-            );
-          },
-          loading: () => SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            child: Row(
-              children: List.generate(
-                3,
-                (index) => const Padding(
-                  padding: EdgeInsets.only(right: AppSpacing.md),
-                  child: SizedBox(width: 200.0, child: ShimmerProductCard()),
-                ),
+            error: (err, _) => Text(
+              'Unable to load recommended bundles.',
+              style: AppTypography.caption.copyWith(
+                color: AppColors.destructiveRed,
               ),
             ),
           ),
-          error: (_, __) => const SizedBox.shrink(),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

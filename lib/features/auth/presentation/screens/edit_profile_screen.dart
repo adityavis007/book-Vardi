@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/stationery_background.dart';
 import '../../domain/user_model.dart';
@@ -142,23 +143,24 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F291E),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontFamily: AppTypography.fontFamily,
-            fontSize: 18.0,
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: false,
+      backgroundColor: AppColors.surfaceWhite,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: IconButton(
+        key: const Key('about_back_button'),
+        icon: const Icon(Icons.arrow_back_rounded, color: AppColors.primaryNavy),
+        onPressed: () {
+          context.pop();}
       ),
+      title: Text(
+        'Edit Profile',
+        style: AppTypography.heading1.copyWith(
+          fontSize: 18.0,
+          color: AppColors.primaryNavy,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
       body: StationeryBackground(
         child: Form(
           key: _formKey,

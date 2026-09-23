@@ -17,6 +17,12 @@ import '../../../auth/domain/auth_state.dart';
 import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../location/presentation/controllers/location_controller.dart';
 import '../../../location/presentation/widgets/location_modal_bottom_sheet.dart';
+import '../../../../core/guards/guest_guard.dart';
+import '../../../../core/guards/pending_action.dart';
+import '../../../cart/domain/cart_item_model.dart';
+import '../../../cart/domain/wishlist_item_model.dart';
+import '../../../cart/presentation/controllers/cart_controller.dart';
+import '../../../cart/presentation/controllers/wishlist_controller.dart';
 
 /// Data model representing high-converting promotional banners in the home carousel.
 class PromoBanner {
@@ -171,6 +177,65 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.invalidate(schoolsProvider);
     // Allow providers to re-fetch
     await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  void _handleAddToCart(BuildContext context, ProductModel product) {
+    executeWithAuthGuard(
+      context,
+      ref,
+      action: PendingAction(
+        type: PendingActionType.addToCart,
+        productId: product.productId,
+        quantity: 1,
+      ),
+      onAuthenticated: () {
+        ref.read(cartControllerProvider).addToCart(product);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added ${product.title} to cart'),
+            duration: const Duration(seconds: 2),
+            action: SnackBarAction(
+              label: 'VIEW CART',
+              textColor: AppColors.secondaryAmber,
+              onPressed: () => context.push('/cart'),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _handleToggleWishlist(BuildContext context, ProductModel product) {
+    executeWithAuthGuard(
+      context,
+      ref,
+      action: PendingAction(
+        type: PendingActionType.toggleWishlist,
+        productId: product.productId,
+      ),
+      onAuthenticated: () async {
+        final wishlistNotifier = ref.read(wishlistControllerProvider);
+        final isWishlisted = ref
+            .read(wishlistItemsListProvider)
+            .any((item) => item.productId == product.productId);
+
+        final wishlistItem = WishlistItemModel.fromProduct(product);
+        await wishlistNotifier.toggleWishlist(wishlistItem);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                isWishlisted
+                    ? 'Removed ${product.title} from wishlist'
+                    : 'Added ${product.title} to wishlist',
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -693,6 +758,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildRecommendedBundlesSection() {
     final bundlesAsync = ref.watch(recommendedBundlesProvider);
+    final wishlistItems = ref.watch(wishlistItemsListProvider);
+    final wishlistIdSet = wishlistItems.map((item) => item.productId).toSet();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -733,9 +800,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ProductCard(
                         width: 190.0,
                         product: bundles[i],
-                        onTap: (prod) {
-                          widget.onProductTap?.call(prod);
+                        isWishlisted: wishlistIdSet.contains(bundles[i].productId),
+                        onTap: (p) {
+                          if (widget.onProductTap != null) {
+                            widget.onProductTap!(p);
+                          } else {
+                            context.push('/product/${p.productId}');
+                          }
                         },
+                        onAddToCart: (p) => _handleAddToCart(context, p),
+                        onToggleWishlist: (p) => _handleToggleWishlist(context, p),
                       ),
                     ],
                   ],
@@ -768,6 +842,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildPopularItemsSection() {
     final productsAsync = ref.watch(filteredProductsProvider);
+    final wishlistItems = ref.watch(wishlistItemsListProvider);
+    final wishlistIdSet = wishlistItems.map((item) => item.productId).toSet();
 
     final screenWidth = MediaQuery.of(context).size.width;
     final crossAxisCount = screenWidth > 600 ? 4 : 2;
@@ -832,9 +908,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   final product = products[index];
                   return ProductCard(
                     product: product,
-                    onTap: (prod) {
-                      widget.onProductTap?.call(prod);
+                    isWishlisted: wishlistIdSet.contains(product.productId),
+                    onTap: (p) {
+                      if (widget.onProductTap != null) {
+                        widget.onProductTap!(p);
+                      } else {
+                        context.push('/product/${p.productId}');
+                      }
                     },
+                    onAddToCart: (p) => _handleAddToCart(context, p),
+                    onToggleWishlist: (p) => _handleToggleWishlist(context, p),
                   );
                 },
               );

@@ -279,9 +279,9 @@ void main() {
       expect(find.text('Mathematics Class 6 NCERT'), findsOneWidget);
       expect(cartRepo.items, isEmpty);
 
-      // Scroll slightly and tap Move to Cart
+      // Scroll to button and tap Move to Cart
       final moveBtn = find.byKey(Key('wishlist_move_to_cart_${wishItem1.productId}'));
-      await tester.drag(find.byType(GridView), const Offset(0, -100));
+      await tester.ensureVisible(moveBtn);
       await tester.pumpAndSettle();
       await tester.tap(moveBtn);
       await tester.pumpAndSettle();

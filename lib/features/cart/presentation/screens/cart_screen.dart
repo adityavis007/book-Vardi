@@ -9,6 +9,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/guards/guest_guard.dart';
 import '../../../../core/guards/pending_action.dart';
 import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/stationery_background.dart';
 import '../../domain/cart_item_model.dart';
 import '../../domain/price_breakup_model.dart';
 import '../controllers/cart_controller.dart';
@@ -141,7 +142,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final bool isEmpty = cartItems.isEmpty;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundSlate,
       appBar: AppBar(
         backgroundColor: AppColors.surfaceWhite,
         elevation: 0,
@@ -161,20 +162,24 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                 color: AppColors.primaryNavy,
               ),
             ),
-            const SizedBox(width: 10.0),
-            Text(
-              'Your Cart Items',
-              style: AppTypography.heading1.copyWith(
-                fontSize: 18.0,
-                color: AppColors.textDark,
-                fontWeight: FontWeight.w700,
+            const SizedBox(width: 8.0),
+            Flexible(
+              child: Text(
+                'Your Cart Items',
+                style: AppTypography.heading1.copyWith(
+                  fontSize: 17.0,
+                  color: AppColors.textDark,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 8.0),
+            const SizedBox(width: 6.0),
             if (!isEmpty)
               Container(
-                width: 24.0,
-                height: 24.0,
+                width: 22.0,
+                height: 22.0,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: AppColors.secondaryAmberDark,
@@ -184,7 +189,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   '${cartItems.length}',
                   style: const TextStyle(
                     color: AppColors.surfaceWhite,
-                    fontSize: 12.0,
+                    fontSize: 11.0,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -193,8 +198,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
         ),
         actions: [
           if (!isEmpty)
-            TextButton.icon(
+            TextButton(
               key: const Key('cart_clear_button'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                visualDensity: VisualDensity.compact,
+              ),
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
@@ -226,16 +235,12 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                   ref.read(cartControllerProvider).clearCart();
                 }
               },
-              icon: const Icon(
-                Icons.delete_outline_rounded,
-                size: 16.0,
-                color: AppColors.destructiveRed,
-              ),
-              label: Text(
+              child: Text(
                 'Clear Cart',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.destructiveRed,
                   fontWeight: FontWeight.w600,
+                  fontSize: 12.0,
                 ),
               ),
             ),
@@ -252,28 +257,30 @@ class _CartScreenState extends ConsumerState<CartScreen> {
           ),
         ],
       ),
-      body: isEmpty
-          ? _buildEmptyCart(context)
-          : Column(
-              children: [
-                // Free Shipping Progress Banner
-                _buildFreeShippingBanner(),
+      body: StationeryBackground(
+        child: isEmpty
+            ? _buildEmptyCart(context)
+            : Column(
+                children: [
+                  // Free Shipping Progress Banner
+                  _buildFreeShippingBanner(),
 
-                // Cart List
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    children: [
-                      ...cartItems.map((item) => _buildCartItemCard(item)),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
+                  // Cart List
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      children: [
+                        ...cartItems.map((item) => _buildCartItemCard(item)),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
+                    ),
                   ),
-                ),
 
-                // Bottom Summary & Action Bar
-                _buildBottomSummaryAndActions(context, effectivePriceBreakup),
-              ],
-            ),
+                  // Bottom Summary & Action Bar
+                  _buildBottomSummaryAndActions(context, effectivePriceBreakup),
+                ],
+              ),
+      ),
     );
   }
 

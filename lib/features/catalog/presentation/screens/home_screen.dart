@@ -570,6 +570,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           return DropdownButton<String>(
                             key: const Key('school_dropdown'),
                             isExpanded: true,
+                            menuMaxHeight: 180.0,
                             value: filterState.schoolName,
                             hint: Text(
                               'Select School',
@@ -650,6 +651,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         isExpanded: true,
+                        menuMaxHeight: 180.0,
                         value: filterState.grade,
                         hint: Text(
                           'Grade',

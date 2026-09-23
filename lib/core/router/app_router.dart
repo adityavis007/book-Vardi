@@ -24,6 +24,7 @@ import '../../features/admin/presentation/screens/admin_products_screen.dart';
 import '../../features/location/presentation/controllers/location_controller.dart';
 import '../../features/location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../../features/coupons/presentation/screens/coupons_screen.dart';
+import '../../features/about/presentation/screens/about_us_screen.dart';
 import '../guards/admin_guard.dart';
 import '../../shared/widgets/app_scaffold_shell.dart';
 
@@ -209,6 +210,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/coupons',
         name: 'coupons',
         builder: (context, state) => const CouponsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/about',
+        name: 'about',
+        builder: (context, state) => const AboutUsScreen(),
       ),
 
       // Administrative Operations Portal Routes

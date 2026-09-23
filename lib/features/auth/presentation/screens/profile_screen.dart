@@ -148,7 +148,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     key: const Key('profile_about_us_tile'),
                     icon: Icons.info_outline_rounded,
                     title: 'About us',
-                    onTap: () => _showAboutDialog(context),
+                    onTap: () => context.push('/about'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_share_app_tile'),
@@ -207,7 +207,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     key: const Key('profile_about_us_tile'),
                     icon: Icons.info_outline_rounded,
                     title: 'About us',
-                    onTap: () => _showAboutDialog(context),
+                    onTap: () => context.push('/about'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_share_app_tile'),

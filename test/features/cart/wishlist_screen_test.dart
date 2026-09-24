@@ -245,8 +245,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Header shows count (2)
-      expect(find.text('My Wishlist (2)'), findsOneWidget);
+      // Header shows title and yellow circular badge count (2)
+      expect(find.text('My Wishlist'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
 
       // Item 1
       expect(find.text('Mathematics Class 6 NCERT'), findsOneWidget);
@@ -320,6 +321,32 @@ void main() {
       expect(find.text('Your Wishlist is Empty'), findsOneWidget);
 
       wishlistRepo.dispose();
+    });
+
+    testWidgets('zero layout overflow across standard mobile viewports',
+        (WidgetTester tester) async {
+      for (final size in [
+        const Size(360, 640),
+        const Size(375, 667),
+        const Size(390, 844),
+        const Size(412, 915),
+      ]) {
+        await tester.binding.setSurfaceSize(size);
+        final wishlistRepo = FakeWishlistRepository([wishItem1, wishItem2]);
+        final cartRepo = FakeCartRepository();
+
+        await tester.pumpWidget(
+          buildTestableWidget(
+            authState: const AuthState.authenticated(testUser),
+            wishlistRepo: wishlistRepo,
+            cartRepo: cartRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        wishlistRepo.dispose();
+      }
     });
   });
 }

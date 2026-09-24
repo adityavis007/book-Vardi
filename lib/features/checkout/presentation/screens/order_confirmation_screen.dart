@@ -359,8 +359,8 @@ class _OrderConfirmationScreenState
             children: [
               Container(
                 padding: const EdgeInsets.all(AppSpacing.xs + 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFF6FF), // Blue-50
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEFF6FF), // Blue-50
                   borderRadius: AppSpacing.roundedMicro,
                 ),
                 child: const Icon(

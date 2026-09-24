@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/stationery_background.dart';
@@ -32,6 +35,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late TextEditingController _landmarkController;
   late String _selectedAddressTag;
 
+  String? _photoUrl;
   bool _isSaving = false;
 
   @override
@@ -39,9 +43,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.initState();
     final user = ref.read(authControllerProvider).user;
 
+    _photoUrl = user?.photoUrl;
     _nameController = TextEditingController(text: user?.name ?? 'Rahul');
     _emailController = TextEditingController(text: user?.email ?? 'rahul@gmail.com');
-    _phoneController = TextEditingController(text: user?.phone ?? '3213213212');
+    _phoneController = TextEditingController(
+      text: user?.phone != null
+          ? user!.phone.replaceAll('+91', '').replaceAll(RegExp(r'\D'), '')
+          : '6387977830',
+    );
     _rollNoController = TextEditingController(
       text: user?.rollNo ?? user?.studentId ?? 'SC-5425',
     );
@@ -78,6 +87,117 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: source,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _photoUrl = pickedFile.path;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not access image: $e')),
+        );
+      }
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Change Profile Photo',
+                style: TextStyle(
+                  fontFamily: AppTypography.fontFamily,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF0F291E),
+                ),
+              ),
+              const SizedBox(height: 14.0),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded, color: Color(0xFF16A34A)),
+                ),
+                title: const Text(
+                  'Take Photo (Camera)',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: const Icon(Icons.photo_library_rounded, color: Color(0xFFD97706)),
+                ),
+                title: const Text(
+                  'Choose from Gallery',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              if (_photoUrl != null && _photoUrl!.isNotEmpty)
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEE2E2),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: const Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444)),
+                  ),
+                  title: const Text(
+                    'Remove Photo',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14.0, color: Color(0xFFEF4444)),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    setState(() {
+                      _photoUrl = '';
+                    });
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _handleSave() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -92,10 +212,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       return;
     }
 
+    final rawPhone = _phoneController.text.trim();
+    final formattedPhone = rawPhone.startsWith('+91') ? rawPhone : '+91$rawPhone';
+
     final updatedUser = currentUser.copyWith(
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
+      phone: formattedPhone,
+      photoUrl: _photoUrl,
       rollNo: _rollNoController.text.trim(),
       studentId: _rollNoController.text.trim(),
       schoolName: _schoolController.text.trim(),
@@ -213,111 +337,105 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Avatar Stack
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 68.0,
-                height: 68.0,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A2F),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: const Color(0xFFFBBF24),
-                    width: 2.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.15),
-                      blurRadius: 6.0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    fontFamily: AppTypography.fontFamily,
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFFBBF24),
-                  ),
-                ),
-              ),
-              // Yellow Edit Pill Badge
-              Positioned(
-                top: -4,
-                right: -10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
+          GestureDetector(
+            onTap: _showImageSourceDialog,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 68.0,
+                  height: 68.0,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFBBF24),
-                    borderRadius: BorderRadius.circular(12.0),
+                    color: const Color(0xFF1E3A2F),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFFBBF24),
+                      width: 2.2,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.25),
-                        blurRadius: 4.0,
-                        offset: const Offset(0, 1),
+                        color: Colors.black.withValues(alpha: 0.15),
+                        blurRadius: 6.0,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        size: 11.0,
-                        color: Colors.black,
-                      ),
-                      SizedBox(width: 3.0),
-                      Text(
-                        'Edit',
-                        style: TextStyle(
-                          fontFamily: AppTypography.fontFamily,
-                          fontSize: 10.0,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: _buildAvatarWidget(initial),
                 ),
-              ),
-              // Student Pill Badge
-              Positioned(
-                bottom: -8,
-                left: 0,
-                right: 0,
-                child: Center(
+                // Yellow Edit Pill Badge
+                Positioned(
+                  top: -4,
+                  right: -10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 2.5),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFBBF24),
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(12.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
-                          blurRadius: 3.0,
+                          color: Colors.black.withValues(alpha: 0.25),
+                          blurRadius: 4.0,
                           offset: const Offset(0, 1),
                         ),
                       ],
                     ),
-                    child: const Text(
-                      'STUDENT',
-                      style: TextStyle(
-                        fontFamily: AppTypography.fontFamily,
-                        fontSize: 9.0,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                        letterSpacing: 0.4,
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          size: 11.0,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 3.0),
+                        Text(
+                          'Change',
+                          style: TextStyle(
+                            fontFamily: AppTypography.fontFamily,
+                            fontSize: 10.0,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Student Pill Badge
+                Positioned(
+                  bottom: -8,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFBBF24),
+                        borderRadius: BorderRadius.circular(10.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 3.0,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: const Text(
+                        'STUDENT',
+                        style: TextStyle(
+                          fontFamily: AppTypography.fontFamily,
+                          fontSize: 9.0,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black,
+                          letterSpacing: 0.4,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(width: 16.0),
 
@@ -383,6 +501,50 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatarWidget(String initial) {
+    if (_photoUrl != null && _photoUrl!.isNotEmpty) {
+      if (_photoUrl!.startsWith('http://') || _photoUrl!.startsWith('https://')) {
+        return ClipOval(
+          child: Image.network(
+            _photoUrl!,
+            width: 68.0,
+            height: 68.0,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildInitialAvatar(initial),
+          ),
+        );
+      } else {
+        final file = File(_photoUrl!);
+        if (file.existsSync()) {
+          return ClipOval(
+            child: Image.file(
+              file,
+              width: 68.0,
+              height: 68.0,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _buildInitialAvatar(initial),
+            ),
+          );
+        }
+      }
+    }
+    return _buildInitialAvatar(initial);
+  }
+
+  Widget _buildInitialAvatar(String initial) {
+    return Center(
+      child: Text(
+        initial,
+        style: const TextStyle(
+          fontFamily: AppTypography.fontFamily,
+          fontSize: 28.0,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFFFBBF24),
+        ),
       ),
     );
   }
@@ -461,10 +623,20 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           // MOBILE PHONE NUMBER
           _buildTextField(
             key: const Key('edit_profile_phone_field'),
-            label: 'MOBILE PHONE NUMBER',
+            label: 'MOBILE PHONE NUMBER (10 DIGITS)',
             controller: _phoneController,
             icon: Icons.phone_outlined,
             keyboardType: TextInputType.phone,
+            maxLength: 10,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(10),
+            ],
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) return 'Phone number cannot be empty';
+              if (val.trim().length != 10) return 'Enter a valid 10-digit mobile number';
+              return null;
+            },
           ),
           const SizedBox(height: 14.0),
 
@@ -661,6 +833,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     required TextEditingController controller,
     IconData? icon,
     TextInputType? keyboardType,
+    int? maxLength,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return Column(
@@ -681,6 +855,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           key: key,
           controller: controller,
           keyboardType: keyboardType,
+          maxLength: maxLength,
+          inputFormatters: inputFormatters,
           validator: validator,
           style: const TextStyle(
             fontFamily: AppTypography.fontFamily,
@@ -689,6 +865,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             color: Color(0xFF0F172A),
           ),
           decoration: InputDecoration(
+            counterText: '',
             prefixIcon: icon != null ? Icon(icon, size: 18.0, color: const Color(0xFF64748B)) : null,
             contentPadding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
             filled: true,

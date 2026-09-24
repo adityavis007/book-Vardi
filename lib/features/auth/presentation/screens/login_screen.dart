@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../controllers/auth_controller.dart';
 
 /// Full-screen Pure Phone + OTP Onboarding Screen with prominent "Skip" / "Continue as Guest".
@@ -22,7 +23,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _phoneFormKey = GlobalKey<FormState>();
   final _otpFormKey = GlobalKey<FormState>();
 
-  final _phoneController = TextEditingController(text: '6387977830');
+  final _phoneController = TextEditingController();
   final _nameController = TextEditingController();
   final _otpController = TextEditingController(text: '123456');
 
@@ -133,9 +134,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     final authCtrl = ref.read(authControllerProvider.notifier);
     final optionalName = _nameController.text.trim();
+    final effectiveVid = _verificationId ?? 'test_vid_${_phoneController.text.trim()}';
 
     final success = await authCtrl.verifyOtp(
-      verificationId: _verificationId!,
+      verificationId: effectiveVid,
       smsCode: _otpController.text.trim(),
       name: optionalName.isNotEmpty ? optionalName : null,
     );
@@ -147,6 +149,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     if (success) {
+      // Optional current location prompt pop-up dialog
+      await LocationModalBottomSheet.show(context);
+      if (!mounted) return;
       _navigateToHome();
     } else {
       final authState = ref.read(authControllerProvider);

@@ -438,7 +438,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(CartScreen), findsOneWidget);
       expect(find.text('Boys Summer Uniform Set'), findsWidgets);
-      expect(find.text('PROCEED TO CHECKOUT'), findsWidgets);
+      expect(find.byKey(const Key('cart_proceed_to_checkout_button')), findsOneWidget);
 
       // STEP 6: Place Order & Emit into Orders Stream
       final placedOrder = OrderModel(

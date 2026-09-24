@@ -3,10 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/guards/guest_guard.dart';
+import '../../../../core/guards/pending_action.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/app_snackbar.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/shimmer_loading.dart';
 import '../../../../shared/widgets/stationery_background.dart';
+import '../../../cart/domain/wishlist_item_model.dart';
+import '../../../cart/presentation/controllers/cart_controller.dart';
+import '../../../cart/presentation/controllers/wishlist_controller.dart';
 import '../../data/catalog_repository.dart';
 import '../../domain/product_model.dart';
 import '../controllers/catalog_controller.dart';
@@ -530,9 +536,65 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
+  void _handleAddToCart(BuildContext context, ProductModel product) {
+    executeWithAuthGuard(
+      context,
+      ref,
+      action: PendingAction(
+        type: PendingActionType.addToCart,
+        productId: product.productId,
+        quantity: 1,
+      ),
+      onAuthenticated: () {
+        ref
+            .read(cartControllerProvider)
+            .addToCart(product, quantity: 1);
+        AppSnackBar.showCartSnackBar(
+          context,
+          productTitle: product.name,
+        );
+      },
+    );
+  }
+
+  void _handleToggleWishlist(BuildContext context, ProductModel product) {
+    executeWithAuthGuard(
+      context,
+      ref,
+      action: PendingAction(
+        type: PendingActionType.toggleWishlist,
+        productId: product.productId,
+      ),
+      onAuthenticated: () async {
+        final wishlistNotifier = ref.read(wishlistControllerProvider);
+        final isWishlisted = ref
+            .read(wishlistItemsListProvider)
+            .any((item) => item.productId == product.productId);
+
+        final wishlistItem = WishlistItemModel.fromProduct(product);
+        await wishlistNotifier.toggleWishlist(wishlistItem);
+
+        if (mounted && context.mounted) {
+          AppSnackBar.showWishlistSnackBar(
+            context,
+            productTitle: product.title,
+            isAdded: !isWishlisted,
+          );
+        }
+      },
+    );
+  }
+
   Widget _buildProductsContent(AsyncValue<List<ProductModel>> productsAsync) {
+    final wishlistItems = ref.watch(wishlistItemsListProvider);
+    final wishlistIdSet = wishlistItems.map((item) => item.productId).toSet();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600;
+    final crossAxisCount = isTablet ? 3 : 2;
+    final childAspectRatio = screenWidth <= 380 ? 0.53 : (isTablet ? 0.65 : 0.58);
+
     return productsAsync.when(
-      loading: () => _buildShimmerGrid(),
+      loading: () => _buildShimmerGrid(crossAxisCount, childAspectRatio),
       error: (err, _) => _buildErrorState(err.toString()),
       data: (products) {
         if (products.isEmpty) {
@@ -540,18 +602,22 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         }
         return GridView.builder(
           key: const Key('search_results_grid'),
-          padding: const EdgeInsets.all(AppSpacing.md),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: AppSpacing.sm,
-            mainAxisSpacing: AppSpacing.sm,
-            childAspectRatio: 0.46,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 12.0,
+            childAspectRatio: childAspectRatio,
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
             final product = products[index];
             return ProductCard(
               product: product,
+              isWishlisted: wishlistIdSet.contains(product.productId),
               onTap: (prod) {
                 if (widget.onProductTap != null) {
                   widget.onProductTap!(prod.productId);
@@ -559,6 +625,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   context.push('/product/${prod.productId}');
                 }
               },
+              onAddToCart: (p) => _handleAddToCart(context, p),
+              onToggleWishlist: (p) => _handleToggleWishlist(context, p),
             );
           },
         );
@@ -566,14 +634,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildShimmerGrid() {
+  Widget _buildShimmerGrid(int crossAxisCount, double childAspectRatio) {
     return GridView.builder(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: AppSpacing.sm,
-        mainAxisSpacing: AppSpacing.sm,
-        childAspectRatio: 0.46,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.md,
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 12.0,
+        childAspectRatio: childAspectRatio,
       ),
       itemCount: 6,
       itemBuilder: (_, __) => const ShimmerProductCard(),

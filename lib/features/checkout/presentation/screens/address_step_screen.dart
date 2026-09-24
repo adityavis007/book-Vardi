@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:book_vardi/core/constants/app_colors.dart';
 import 'package:book_vardi/core/constants/app_spacing.dart';
@@ -6,6 +7,7 @@ import 'package:book_vardi/core/theme/app_typography.dart';
 import 'package:book_vardi/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:book_vardi/features/checkout/data/address_repository.dart';
 import 'package:book_vardi/features/checkout/domain/address_model.dart';
+import 'package:book_vardi/features/checkout/presentation/screens/add_address_screen.dart';
 import 'package:book_vardi/features/checkout/presentation/controllers/checkout_controller.dart';
 import 'package:book_vardi/features/location/domain/location_hub_model.dart';
 import 'package:book_vardi/features/location/presentation/controllers/location_controller.dart';
@@ -57,19 +59,20 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
     });
   }
 
-  void _openAddAddressModal(BuildContext context, String? userId) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.surfaceWhite,
-      shape: const RoundedRectangleBorder(
-        borderRadius: AppSpacing.sheetRadius,
-      ),
-      builder: (ctx) => AddAddressBottomSheet(
-        userId: userId,
-        onAddressAdded: (newAddress) {
-          ref.read(checkoutControllerProvider.notifier).selectAddress(newAddress);
-        },
+  void _openAddAddressModal(
+    BuildContext context,
+    String? userId, {
+    AddressModel? initialAddress,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => AddAddressScreen(
+          userId: userId,
+          initialAddress: initialAddress,
+          onAddressAdded: (newAddress) {
+            ref.read(checkoutControllerProvider.notifier).selectAddress(newAddress);
+          },
+        ),
       ),
     );
   }
@@ -189,6 +192,7 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
                             context: context,
                             address: address,
                             isSelected: isSelected,
+                            userId: userId,
                             onTap: () {
                               ref
                                   .read(checkoutControllerProvider.notifier)
@@ -248,9 +252,9 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          ClipRRect(
+          const ClipRRect(
             borderRadius: AppSpacing.roundedFull,
-            child: const LinearProgressIndicator(
+            child: LinearProgressIndicator(
               value: 0.66,
               minHeight: 6.0,
               backgroundColor: AppColors.borderGray,
@@ -397,6 +401,7 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
     required AddressModel address,
     required bool isSelected,
     required VoidCallback onTap,
+    String? userId,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -447,7 +452,7 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
                       ],
                     ),
                   ),
-                  if (address.isDefault)
+                  if (address.isDefault) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.sm,
@@ -466,6 +471,25 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(width: AppSpacing.xs),
+                  ],
+                  InkWell(
+                    key: Key('edit_address_btn_${address.addressId}'),
+                    onTap: () => _openAddAddressModal(
+                      context,
+                      userId,
+                      initialAddress: address,
+                    ),
+                    borderRadius: BorderRadius.circular(4.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: const Icon(
+                        Icons.edit_outlined,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -721,11 +745,13 @@ class _AddressStepScreenState extends ConsumerState<AddressStepScreen> {
 class AddAddressBottomSheet extends ConsumerStatefulWidget {
   final String? userId;
   final ValueChanged<AddressModel>? onAddressAdded;
+  final AddressModel? initialAddress;
 
   const AddAddressBottomSheet({
     super.key,
     this.userId,
     this.onAddressAdded,
+    this.initialAddress,
   });
 
   @override
@@ -752,6 +778,19 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialAddress != null) {
+      final addr = widget.initialAddress!;
+      _fullNameController.text = addr.fullName;
+      _phoneController.text = addr.phone;
+      _pincodeController.text = addr.pincode;
+      _addressLine1Controller.text = addr.addressLine1;
+      _addressLine2Controller.text = addr.addressLine2 ?? '';
+      _landmarkController.text = addr.landmark ?? '';
+      _cityController.text = addr.city;
+      _stateController.text = addr.state;
+      _addressType = addr.addressType;
+      _isDefault = addr.isDefault;
+    }
     _pincodeController.addListener(_handlePincodeChange);
   }
 
@@ -790,8 +829,11 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
 
     setState(() => _isSubmitting = true);
 
+    final isEditing = widget.initialAddress != null &&
+        widget.initialAddress!.addressId.isNotEmpty;
+
     final newAddress = AddressModel(
-      addressId: '', // Repository generates document ID
+      addressId: isEditing ? widget.initialAddress!.addressId : '',
       fullName: _fullNameController.text.trim(),
       phone: _phoneController.text.trim(),
       addressLine1: _addressLine1Controller.text.trim(),
@@ -811,9 +853,15 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
     try {
       final repo = ref.read(addressRepositoryProvider);
       final effectiveUserId = widget.userId ?? 'guest_user';
-      final generatedId = await repo.addAddress(effectiveUserId, newAddress);
+      AddressModel finalizedAddress;
 
-      final finalizedAddress = newAddress.copyWith(addressId: generatedId);
+      if (isEditing) {
+        await repo.updateAddress(effectiveUserId, newAddress);
+        finalizedAddress = newAddress;
+      } else {
+        final generatedId = await repo.addAddress(effectiveUserId, newAddress);
+        finalizedAddress = newAddress.copyWith(addressId: generatedId);
+      }
 
       if (widget.onAddressAdded != null) {
         widget.onAddressAdded!(finalizedAddress);
@@ -822,7 +870,11 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Address added successfully!')),
+          SnackBar(
+            content: Text(isEditing
+                ? 'Address updated successfully!'
+                : 'Address added successfully!'),
+          ),
         );
       }
     } catch (e) {
@@ -922,6 +974,11 @@ class _AddAddressBottomSheetState extends ConsumerState<AddAddressBottomSheet> {
                         hintText: '9876543210',
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        maxLength: 10,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         validator: AddressModel.validatePhoneField,
                       ),
                       const SizedBox(height: AppSpacing.md),

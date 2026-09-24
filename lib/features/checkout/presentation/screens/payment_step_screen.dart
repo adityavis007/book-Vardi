@@ -434,7 +434,7 @@ class _PaymentStepScreenState extends ConsumerState<PaymentStepScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xs + 2),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: AppSpacing.roundedMicro,
               ),
               child: Icon(icon, size: 20, color: iconColor),
@@ -465,7 +465,7 @@ class _PaymentStepScreenState extends ConsumerState<PaymentStepScreen> {
                             vertical: 1.5,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.successGreen.withOpacity(0.12),
+                            color: AppColors.successGreen.withValues(alpha: 0.12),
                             borderRadius: AppSpacing.roundedMicro,
                           ),
                           child: Text(
@@ -495,10 +495,10 @@ class _PaymentStepScreenState extends ConsumerState<PaymentStepScreen> {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryAmber.withOpacity(0.15),
+                        color: AppColors.secondaryAmber.withValues(alpha: 0.15),
                         borderRadius: AppSpacing.roundedSmall,
                         border: Border.all(
-                          color: AppColors.secondaryAmber.withOpacity(0.4),
+                          color: AppColors.secondaryAmber.withValues(alpha: 0.4),
                         ),
                       ),
                       child: Text(

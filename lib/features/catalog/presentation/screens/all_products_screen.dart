@@ -11,6 +11,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/guards/guest_guard.dart';
 import '../../../../core/guards/pending_action.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/app_snackbar.dart';
 import '../../../../shared/widgets/shimmer_loading.dart';
 import '../../../cart/domain/wishlist_item_model.dart';
 import '../../../cart/presentation/controllers/cart_controller.dart';
@@ -838,9 +839,9 @@ class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              crossAxisSpacing: 12.0,
-              mainAxisSpacing: 14.0,
-              childAspectRatio: 0.54,
+              crossAxisSpacing: 10.0,
+              mainAxisSpacing: 12.0,
+              childAspectRatio: 0.58,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -1049,17 +1050,9 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
               quantity: 1,
             );
         if (success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Added "${widget.product.title}" to cart'),
-              backgroundColor: const Color(0xFF0F172A),
-              duration: const Duration(seconds: 2),
-              action: SnackBarAction(
-                label: 'VIEW CART',
-                textColor: const Color(0xFFFDE047),
-                onPressed: () => context.push('/cart'),
-              ),
-            ),
+          AppSnackBar.showCartSnackBar(
+            context,
+            productTitle: widget.product.title,
           );
         }
       },
@@ -1109,9 +1102,9 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1:1 Image Container with Top-Right Circular Wishlist Button
+              // 1:1.14 Image Container with Discount Tag & Wishlist Button
               AspectRatio(
-                aspectRatio: 1.18,
+                aspectRatio: 1.14,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -1120,16 +1113,43 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                       child: _buildProductImage(product),
                     ),
 
+                    // Burgundy / Amber Discount Tag (Top Left)
+                    if (product.hasDiscount)
+                      Positioned(
+                        top: 6.0,
+                        left: 6.0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0,
+                            vertical: 2.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF9F1239),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: Text(
+                            '${product.discountPercentage}% OFF',
+                            style: const TextStyle(
+                              fontFamily: AppTypography.fontFamily,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+
                     // Circular White Wishlist Heart Button
                     Positioned(
                       top: 6.0,
                       right: 6.0,
                       child: InkWell(
                         onTap: _handleToggleWishlist,
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(14.0),
                         child: Container(
-                          width: 30.0,
-                          height: 30.0,
+                          width: 28.0,
+                          height: 28.0,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: Colors.white.withValues(alpha: 0.95),
@@ -1150,7 +1170,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                               widget.isWishlisted
                                   ? Icons.favorite_rounded
                                   : Icons.favorite_border_rounded,
-                              size: 16.0,
+                              size: 15.0,
                               color: widget.isWishlisted
                                   ? const Color(0xFFEF4444)
                                   : const Color(0xFF64748B),
@@ -1169,7 +1189,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                   padding: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1196,7 +1216,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                                 : 'Premium quality school uniform & supplies.',
                             style: const TextStyle(
                               fontFamily: AppTypography.fontFamily,
-                              fontSize: 10.5,
+                              fontSize: 10.0,
                               fontWeight: FontWeight.w400,
                               color: Color(0xFF64748B),
                               height: 1.15,
@@ -1293,7 +1313,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                                           isFilled
                                               ? Icons.star_rounded
                                               : Icons.star_outline_rounded,
-                                          size: 11.5,
+                                          size: 10.5,
                                           color: isFilled
                                               ? const Color(0xFFF59E0B)
                                               : const Color(0xFFCBD5E1),
@@ -1304,7 +1324,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                                         product.rating.toStringAsFixed(1),
                                         style: const TextStyle(
                                           fontFamily: AppTypography.fontFamily,
-                                          fontSize: 9.5,
+                                          fontSize: 9.0,
                                           fontWeight: FontWeight.w600,
                                           color: Color(0xFF64748B),
                                         ),
@@ -1317,12 +1337,11 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6.0),
 
-                      // Add to Cart Button (Unclipped, fully visible with #FDE047 amber tone)
+                      // Add to Cart Button (H: 30px, Soft Vibrant Amber)
                       SizedBox(
                         width: double.infinity,
-                        height: 32.0,
+                        height: 30.0,
                         child: ElevatedButton(
                           onPressed: canAddToCart ? _handleAddToCart : null,
                           style: ElevatedButton.styleFrom(
@@ -1335,7 +1354,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                             elevation: 0,
                             shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.0),
+                              borderRadius: BorderRadius.circular(15.0),
                               side: BorderSide(
                                 color: canAddToCart
                                     ? const Color(0xFFEAB308)
@@ -1353,7 +1372,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                               children: [
                                 Icon(
                                   Icons.shopping_cart_outlined,
-                                  size: 14.0,
+                                  size: 13.0,
                                   color: canAddToCart
                                       ? const Color(0xFF0F172A)
                                       : const Color(0xFF94A3B8),
@@ -1363,7 +1382,7 @@ class _Catalog1To1ProductCardState extends ConsumerState<_Catalog1To1ProductCard
                                   canAddToCart ? 'Add to Cart' : 'Out of Stock',
                                   style: TextStyle(
                                     fontFamily: AppTypography.fontFamily,
-                                    fontSize: 11.0,
+                                    fontSize: 10.5,
                                     fontWeight: FontWeight.w700,
                                     color: canAddToCart
                                         ? const Color(0xFF0F172A)

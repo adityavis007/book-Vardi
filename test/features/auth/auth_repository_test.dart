@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_vardi/features/auth/data/auth_repository.dart';
 import 'package:book_vardi/features/auth/domain/user_model.dart';
 
@@ -178,6 +179,100 @@ void main() {
       expect(emittedUsers[1], isNull);
 
       await subscription.cancel();
+    });
+  });
+
+  group('FirebaseAuthRepository Local Session Persistence Tests', () {
+    late SharedPreferences prefs;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues({});
+      prefs = await SharedPreferences.getInstance();
+    });
+
+    test('saves authenticated user session locally upon signInWithOtp', () async {
+      final repo = FirebaseAuthRepository(prefs: prefs);
+
+      final user = await repo.signInWithOtp(
+        verificationId: 'test_vid_9876543210',
+        smsCode: '123456',
+        name: 'Aditya Student',
+      );
+
+      expect(user.phone, equals('+919876543210'));
+      expect(user.name, equals('Aditya Student'));
+
+      // Check SharedPreferences directly
+      final cachedRaw = prefs.getString('bv_auth_session_user_v1');
+      expect(cachedRaw, isNotNull);
+      expect(cachedRaw, contains('9876543210'));
+      expect(cachedRaw, contains('Aditya Student'));
+    });
+
+    test('simulates app restart: new repository instance automatically restores session', () async {
+      // 1. Initial app run: user logs in
+      final firstRunRepo = FirebaseAuthRepository(prefs: prefs);
+      await firstRunRepo.signInWithOtp(
+        verificationId: 'test_vid_9876543210',
+        smsCode: '123456',
+        name: 'Aditya Student',
+      );
+
+      // 2. Simulate app close & reopen: new repository instance with same SharedPreferences
+      final restartRepo = FirebaseAuthRepository(prefs: prefs);
+
+      // getCurrentUser immediately returns cached user without network or login screen
+      final restoredUser = await restartRepo.getCurrentUser();
+      expect(restoredUser, isNotNull);
+      expect(restoredUser!.phone, equals('+919876543210'));
+      expect(restoredUser.name, equals('Aditya Student'));
+
+      // watchAuthState immediately emits cached user on first tick
+      final streamUser = await restartRepo.watchAuthState().first;
+      expect(streamUser, isNotNull);
+      expect(streamUser!.phone, equals('+919876543210'));
+    });
+
+    test('signOut clears local storage so next app launch starts as unauthenticated', () async {
+      final repo = FirebaseAuthRepository(prefs: prefs);
+      await repo.signInWithOtp(
+        verificationId: 'test_vid_9876543210',
+        smsCode: '123456',
+        name: 'Aditya Student',
+      );
+
+      expect(await repo.getCurrentUser(), isNotNull);
+
+      // Log out
+      await repo.signOut();
+
+      // Ensure SharedPreferences is cleared
+      expect(prefs.getString('bv_auth_session_user_v1'), isNull);
+
+      // Simulate app restart
+      final restartRepo = FirebaseAuthRepository(prefs: prefs);
+      final userAfterRestart = await restartRepo.getCurrentUser();
+      expect(userAfterRestart, isNull);
+
+      final streamUser = await restartRepo.watchAuthState().first;
+      expect(streamUser, isNull);
+    });
+
+    test('updateProfile updates stored session in SharedPreferences', () async {
+      final repo = FirebaseAuthRepository(prefs: prefs);
+      final initial = await repo.signInWithOtp(
+        verificationId: 'test_vid_9876543210',
+        smsCode: '123456',
+        name: 'Initial Name',
+      );
+
+      final updated = await repo.updateProfile(initial.copyWith(name: 'Updated Name'));
+      expect(updated.name, equals('Updated Name'));
+
+      // Restart app and verify updated name was persisted
+      final restartRepo = FirebaseAuthRepository(prefs: prefs);
+      final restored = await restartRepo.getCurrentUser();
+      expect(restored?.name, equals('Updated Name'));
     });
   });
 }

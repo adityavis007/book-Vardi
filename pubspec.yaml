@@ -49,6 +49,7 @@ dependencies:
 
   # Network, Storage & Utilities
   cached_network_image: ^3.3.1
+  image_picker: ^1.1.2
   flutter_secure_storage: ^9.2.2
   shared_preferences: ^2.2.3
   hive_ce: ^2.20.0

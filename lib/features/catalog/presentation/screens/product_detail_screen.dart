@@ -9,6 +9,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/guards/guest_guard.dart';
 import '../../../../core/guards/pending_action.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/app_snackbar.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../domain/product_model.dart';
 import '../../domain/variant_model.dart';
@@ -655,6 +656,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           const SizedBox(width: 2.0),
           Text(
             product.rating.toStringAsFixed(1),
+            key: const Key('pdp_rating_text'),
             style: AppTypography.caption.copyWith(
               fontWeight: FontWeight.w700,
               color: AppColors.textDark,
@@ -1013,11 +1015,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         if (widget.onAddToCart != null) {
           widget.onAddToCart!(product, currentVariant);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Added ${product.title} to cart'),
-              duration: const Duration(seconds: 2),
-            ),
+          AppSnackBar.showCartSnackBar(
+            context,
+            productTitle: product.title,
           );
         }
       },
@@ -1243,14 +1243,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'AVAILABLE OFFERS & COUPONS',
-              style: AppTypography.heading2.copyWith(
-                fontSize: 14.0,
-                fontWeight: FontWeight.w800,
-                color: AppColors.primaryNavy,
+            Expanded(
+              child: Text(
+                'AVAILABLE OFFERS & COUPONS',
+                style: AppTypography.heading2.copyWith(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.primaryNavy,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: AppSpacing.xs),
             TextButton(
               onPressed: () => context.push('/coupons'),
               child: const Text('View All ➔', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700)),
@@ -1283,19 +1288,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.local_offer, size: 14.0, color: AppColors.secondaryAmber),
-                            const SizedBox(width: 4.0),
-                            Text(
-                              offer['code']!,
-                              style: AppTypography.caption.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: AppColors.primaryNavy,
+                        Expanded(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.local_offer, size: 14.0, color: AppColors.secondaryAmber),
+                              const SizedBox(width: 4.0),
+                              Flexible(
+                                child: Text(
+                                  offer['code']!,
+                                  style: AppTypography.caption.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.primaryNavy,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: AppSpacing.xs),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
                           decoration: BoxDecoration(
@@ -1371,14 +1383,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Product Reviews',
-              style: AppTypography.heading2.copyWith(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textDark,
+            Expanded(
+              child: Text(
+                'Product Reviews',
+                style: AppTypography.heading2.copyWith(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: AppSpacing.sm),
             OutlinedButton(
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
@@ -1411,29 +1428,34 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           child: Column(
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.rating.toStringAsFixed(1),
-                        style: AppTypography.heading1.copyWith(
-                          fontSize: 32.0,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.textDark,
+                  SizedBox(
+                    width: 105.0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.rating.toStringAsFixed(1),
+                          key: const Key('pdp_reviews_rating_score'),
+                          style: AppTypography.heading1.copyWith(
+                            fontSize: 32.0,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.textDark,
+                          ),
                         ),
-                      ),
-                      Row(
-                        children: List.generate(5, (_) => const Icon(Icons.star_rounded, size: 14.0, color: AppColors.secondaryAmber)),
-                      ),
-                      const SizedBox(height: 4.0),
-                      Text(
-                        'Based on ${product.reviewCount} student reviews',
-                        style: AppTypography.micro.copyWith(color: AppColors.textSecondary),
-                      ),
-                    ],
+                        Row(
+                          children: List.generate(5, (_) => const Icon(Icons.star_rounded, size: 14.0, color: AppColors.secondaryAmber)),
+                        ),
+                        const SizedBox(height: 4.0),
+                        Text(
+                          'Based on ${product.reviewCount} student reviews',
+                          style: AppTypography.micro.copyWith(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: AppSpacing.xl),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       children: List.generate(5, (idx) {
@@ -1446,7 +1468,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 width: 44.0,
                                 child: Text('$star Stars', style: AppTypography.micro.copyWith(color: AppColors.textSecondary)),
                               ),
-                              const SizedBox(width: AppSpacing.sm),
+                              const SizedBox(width: AppSpacing.xs),
                               Expanded(
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(4.0),
@@ -1458,7 +1480,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: AppSpacing.sm),
+                              const SizedBox(width: AppSpacing.xs),
                               Text('0%', style: AppTypography.micro.copyWith(color: AppColors.textSecondary)),
                             ],
                           ),
@@ -1497,14 +1519,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Recommended Kits & Bundles',
-                  style: AppTypography.heading2.copyWith(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textDark,
+                Expanded(
+                  child: Text(
+                    'Recommended Kits & Bundles',
+                    style: AppTypography.heading2.copyWith(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: AppSpacing.xs),
                 TextButton(
                   onPressed: () => context.push('/products'),
                   child: const Text('View All ➔', style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w700)),
@@ -1554,12 +1581,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             children: [
               const Icon(Icons.school_rounded, color: AppColors.primaryNavy, size: 22.0),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                'Grab Your School Kit',
-                style: AppTypography.heading2.copyWith(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primaryNavy,
+              Expanded(
+                child: Text(
+                  'Grab Your School Kit',
+                  style: AppTypography.heading2.copyWith(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primaryNavy,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

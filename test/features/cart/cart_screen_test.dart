@@ -8,7 +8,6 @@ import 'package:book_vardi/features/auth/presentation/controllers/auth_controlle
 import 'package:book_vardi/features/cart/data/cart_repository.dart';
 import 'package:book_vardi/features/cart/domain/cart_item_model.dart';
 import 'package:book_vardi/features/cart/presentation/screens/cart_screen.dart';
-import 'package:book_vardi/features/cart/presentation/widgets/price_breakup_card.dart';
 import 'package:book_vardi/features/cart/presentation/widgets/quantity_stepper.dart';
 
 class FakeAuthController extends StateNotifier<AuthState>

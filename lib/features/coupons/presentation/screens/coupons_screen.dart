@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/stationery_background.dart';
 
 class CouponModel {
@@ -116,7 +116,10 @@ class _CouponsScreenState extends State<CouponsScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.primaryNavy),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.primaryNavy,
+          ),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -137,171 +140,213 @@ class _CouponsScreenState extends State<CouponsScreen> {
       body: StationeryBackground(
         child: Column(
           children: [
-          // Top Header Banner styled with Book Vardi Theme (Deep Pine Green to Amber accents)
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.primaryNavy, AppColors.primaryNavyHover],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+            // Top Header Banner styled with Book Vardi Theme (Deep Pine Green to Amber accents)
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primaryNavy, AppColors.primaryNavyHover],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(28.0),
+                  bottomRight: Radius.circular(28.0),
+                ),
               ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(28.0),
-                bottomRight: Radius.circular(28.0),
-              ),
-            ),
-            padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 24.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.auto_awesome, color: AppColors.secondaryAmber, size: 16.0),
-                    const SizedBox(width: 6.0),
-                    Text(
-                      'Level Up Your Savings!',
-                      style: AppTypography.caption.copyWith(
+              padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 24.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.auto_awesome,
                         color: AppColors.secondaryAmber,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.5,
+                        size: 16.0,
                       ),
-                    ),
-                    const SizedBox(width: 6.0),
-                    const Icon(Icons.auto_awesome, color: AppColors.secondaryAmber, size: 16.0),
-                  ],
-                ),
-                const SizedBox(height: 6.0),
-                Text(
-                  'COUPONS FOR YOU',
-                  style: AppTypography.heading1.copyWith(
-                    fontSize: 22.0,
-                    color: AppColors.surfaceWhite,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-                const SizedBox(height: 10.0),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceWhite.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  child: Text(
-                    'You have ${_coupons.length} active coupons available',
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.secondaryAmber,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                // Ticket / Coupon Illustration Icon
-                Container(
-                  width: 56.0,
-                  height: 56.0,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondaryAmber.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.secondaryAmber, width: 1.5),
-                  ),
-                  child: const Icon(
-                    Icons.local_offer_rounded,
-                    color: AppColors.secondaryAmber,
-                    size: 28.0,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              children: [
-                // Add Coupon Input Card
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceWhite,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
-                    border: Border.all(color: AppColors.borderGray, width: 1.0),
-                    boxShadow: AppSpacing.elevationSm,
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _couponController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter coupon code',
-                            hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 14.0),
-                            border: InputBorder.none,
-                          ),
-                          style: AppTypography.bodyMedium.copyWith(color: AppColors.textDark),
+                      const SizedBox(width: 6.0),
+                      Text(
+                        'Level Up Your Savings!',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.secondaryAmber,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () => _applyCoupon(_couponController.text.trim().toUpperCase()),
-                        child: Text(
-                          'Add coupon',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.primaryNavy,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      const SizedBox(width: 6.0),
+                      const Icon(
+                        Icons.auto_awesome,
+                        color: AppColors.secondaryAmber,
+                        size: 16.0,
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-
-                // Section Title & Filters
-                Text(
-                  'Save more with coupons',
-                  style: AppTypography.heading2.copyWith(
-                    fontSize: 16.0,
-                    color: AppColors.textDark,
+                  const SizedBox(height: 6.0),
+                  Text(
+                    'COUPONS FOR YOU',
+                    style: AppTypography.heading1.copyWith(
+                      fontSize: 22.0,
+                      color: AppColors.surfaceWhite,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Filter Chips Row
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildFilterChip('All'),
-                      const SizedBox(width: AppSpacing.sm),
-                      _buildFilterChip('Shipping'),
-                      const SizedBox(width: AppSpacing.sm),
-                      _buildFilterChip('Kits'),
-                      const SizedBox(width: AppSpacing.sm),
-                      _buildFilterChip('Discount'),
-                      const SizedBox(width: AppSpacing.sm),
-                      _buildFilterChip('Stationery'),
-                    ],
+                  const SizedBox(height: 10.0),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 26.0,
+                      vertical: 6.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceWhite.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Ticket / Coupon Illustration Icon
+                        Container(
+                          width: 18.0,
+                          height: 18.0,
+                          decoration: BoxDecoration(
+                            color: AppColors.secondaryAmber.withValues(
+                              alpha: 0.2,
+                            ),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.secondaryAmber,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.local_offer_rounded,
+                            color: AppColors.secondaryAmber,
+                            size: 8.0,
+                          ),
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          'You have ${_coupons.length} active coupons available',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.secondaryAmber,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Coupons List
-                ..._coupons
-                    .where((c) => _selectedFilter == 'All' || c.category == _selectedFilter)
-                    .map((coupon) => _buildCouponCard(coupon)),
-                const SizedBox(height: 80.0),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                children: [
+                  // Add Coupon Input Card
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 6.0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceWhite,
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusMedium,
+                      ),
+                      border: Border.all(
+                        color: AppColors.borderGray,
+                        width: 1.0,
+                      ),
+                      boxShadow: AppSpacing.elevationSm,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _couponController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter coupon code',
+                              hintStyle: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 14.0,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => _applyCoupon(
+                            _couponController.text.trim().toUpperCase(),
+                          ),
+                          child: Text(
+                            'Add coupon',
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.primaryNavy,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  // Section Title & Filters
+                  Text(
+                    'Save more with coupons',
+                    style: AppTypography.heading2.copyWith(
+                      fontSize: 16.0,
+                      color: AppColors.textDark,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Filter Chips Row
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildFilterChip('All'),
+                        const SizedBox(width: AppSpacing.sm),
+                        _buildFilterChip('Shipping'),
+                        const SizedBox(width: AppSpacing.sm),
+                        _buildFilterChip('Kits'),
+                        const SizedBox(width: AppSpacing.sm),
+                        _buildFilterChip('Discount'),
+                        const SizedBox(width: AppSpacing.sm),
+                        _buildFilterChip('Stationery'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Coupons List
+                  ..._coupons
+                      .where(
+                        (c) =>
+                            _selectedFilter == 'All' ||
+                            c.category == _selectedFilter,
+                      )
+                      .map((coupon) => _buildCouponCard(coupon)),
+                  const SizedBox(height: 80.0),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: const BoxDecoration(
           color: AppColors.surfaceWhite,
-          border: Border(top: BorderSide(color: AppColors.borderGray, width: 1.0)),
+          border: Border(
+            top: BorderSide(color: AppColors.borderGray, width: 1.0),
+          ),
           boxShadow: AppSpacing.shadowNavBar,
         ),
         child: SafeArea(
@@ -347,7 +392,9 @@ class _CouponsScreenState extends State<CouponsScreen> {
         child: Text(
           label,
           style: AppTypography.caption.copyWith(
-            color: isSelected ? AppColors.surfaceWhite : AppColors.textSecondary,
+            color: isSelected
+                ? AppColors.surfaceWhite
+                : AppColors.textSecondary,
             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
           ),
         ),
@@ -375,7 +422,10 @@ class _CouponsScreenState extends State<CouponsScreen> {
             decoration: BoxDecoration(
               color: AppColors.categoryPillBg,
               borderRadius: AppSpacing.roundedSmall,
-              border: Border.all(color: AppColors.categoryPillBorder, width: 1.0),
+              border: Border.all(
+                color: AppColors.categoryPillBorder,
+                width: 1.0,
+              ),
             ),
             child: const Icon(
               Icons.local_offer_rounded,
@@ -401,7 +451,10 @@ class _CouponsScreenState extends State<CouponsScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2.0,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.secondaryAmber.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4.0),
@@ -477,7 +530,9 @@ class _CouponsScreenState extends State<CouponsScreen> {
           color: isSelected ? AppColors.categoryPillBg : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMedium),
           border: Border.all(
-            color: isSelected ? AppColors.primaryNavy.withValues(alpha: 0.3) : AppColors.borderGray,
+            color: isSelected
+                ? AppColors.primaryNavy.withValues(alpha: 0.3)
+                : AppColors.borderGray,
             width: 1.0,
           ),
         ),
@@ -487,14 +542,18 @@ class _CouponsScreenState extends State<CouponsScreen> {
             Icon(
               icon,
               size: 20.0,
-              color: isSelected ? AppColors.primaryNavy : AppColors.textSecondary,
+              color: isSelected
+                  ? AppColors.primaryNavy
+                  : AppColors.textSecondary,
             ),
             const SizedBox(width: 8.0),
             Text(
               label,
               style: AppTypography.bodyMedium.copyWith(
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                color: isSelected ? AppColors.primaryNavy : AppColors.textSecondary,
+                color: isSelected
+                    ? AppColors.primaryNavy
+                    : AppColors.textSecondary,
               ),
             ),
           ],

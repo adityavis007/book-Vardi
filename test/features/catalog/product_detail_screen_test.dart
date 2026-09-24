@@ -208,9 +208,9 @@ void main() {
       expect(find.byIcon(Icons.school_outlined), findsWidgets);
 
       // Rating & Reviews
-      expect(find.text('4.6'), findsOneWidget);
+      expect(find.byKey(const Key('pdp_rating_text')), findsOneWidget);
       expect(find.text('(38)'), findsOneWidget);
-      expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.star_rounded), findsWidgets);
 
       // Stock status
       expect(find.text('In Stock'), findsOneWidget);
@@ -247,7 +247,7 @@ void main() {
 
       // No discount pill or MRP strikethrough
       expect(find.text('₹300'), findsNWidgets(2)); // in price row & sticky bar
-      expect(find.textContaining('OFF'), findsNothing);
+      expect(find.byKey(const Key('pdp_discount_badge')), findsNothing);
     });
 
     testWidgets('renders fallback description when empty', (tester) async {

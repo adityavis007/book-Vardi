@@ -200,6 +200,13 @@ void main() {
       await tester.tap(verifyBtn);
       await tester.pumpAndSettle();
 
+      // Dismiss location dialog if displayed
+      final locationCloseBtn = find.byKey(const Key('location_modal_close_button'));
+      if (locationCloseBtn.evaluate().isNotEmpty) {
+        await tester.tap(locationCloseBtn);
+        await tester.pumpAndSettle();
+      }
+
       expect(mockRepo.lastVerifiedOtp, equals('123456'));
       expect(find.text('Home Catalog View'), findsOneWidget);
     });
@@ -282,6 +289,13 @@ void main() {
       await tester.ensureVisible(verifyBtn);
       await tester.tap(verifyBtn);
       await tester.pumpAndSettle();
+
+      // Dismiss location dialog if displayed
+      final locationCloseBtn = find.byKey(const Key('location_modal_close_button'));
+      if (locationCloseBtn.evaluate().isNotEmpty) {
+        await tester.tap(locationCloseBtn);
+        await tester.pumpAndSettle();
+      }
 
       expect(mockRepo.lastVerifiedName, equals('Rohan Verma'));
       expect(mockRepo.lastVerifiedOtp, equals('654321'));

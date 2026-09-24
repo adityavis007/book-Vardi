@@ -10,6 +10,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
+import '../../../location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../controllers/auth_controller.dart';
 
 /// Full-screen Pure Phone + OTP Registration Screen with prominent "Skip" / "Continue as Guest".
@@ -25,8 +26,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _otpFormKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final _phoneController = TextEditingController(text: '6387977830');
-  final _otpController = TextEditingController(text: '123456');
+  final _phoneController = TextEditingController();
+  final _otpController = TextEditingController();
 
   int _currentStep = 1;
 
@@ -159,7 +160,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
   }
 
-  void _navigateToHome() {
+  Future<void> _navigateToHome() async {
+    if (mounted) {
+      await LocationModalBottomSheet.show(context);
+    }
+    if (!mounted) return;
     if (context.canPop()) {
       context.pop();
     } else {
@@ -228,7 +233,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               vertical: AppSpacing.md,
             ),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 440, maxHeight: 400),
+              constraints: const BoxConstraints(maxWidth: 440),
               child: Card(
                 elevation: 0,
                 color: AppColors.surfaceWhite,

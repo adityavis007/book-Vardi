@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -19,7 +20,10 @@ class AboutUsScreen extends StatelessWidget {
         scrolledUnderElevation: 0,
         leading: IconButton(
           key: const Key('about_back_button'),
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.primaryNavy),
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: AppColors.primaryNavy,
+          ),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -42,43 +46,44 @@ class AboutUsScreen extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Column(
             children: [
-            // 1. Hero Dark Banner
-            _buildHeroBanner(context),
+              // 1. Hero Dark Banner
+              _buildHeroBanner(context),
 
-            // 2. Impact Stats Grid
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                children: [
-                  _buildStatsGrid(),
-                  const SizedBox(height: AppSpacing.xxl),
+              // 2. Impact Stats Grid
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  children: [
+                    _buildStatsGrid(),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                  // 3. Journey & Timeline Section
-                  _buildJourneyTimeline(),
-                  const SizedBox(height: AppSpacing.xxl),
+                    // 3. Journey & Timeline Section
+                    _buildJourneyTimeline(),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                  // 4. Our Values Section
-                  _buildCoreValues(),
-                  const SizedBox(height: AppSpacing.xxl),
+                    // 4. Our Values Section
+                    _buildCoreValues(),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                  // 5. Meet the Team Section
-                  _buildTeamSection(),
-                  const SizedBox(height: AppSpacing.xxl),
+                    // 5. Meet the Team Section
+                    _buildTeamSection(),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                  // 6. Testimonial Quote Card
-                  _buildTestimonialCard(),
-                  const SizedBox(height: AppSpacing.xxl),
+                    // 6. Testimonial Quote Card
+                    _buildTestimonialCard(),
+                    const SizedBox(height: AppSpacing.xxl),
 
-                  // 7. Bottom CTA Banner
-                  _buildCtaBanner(context),
-                  const SizedBox(height: AppSpacing.xxxl),
-                ],
+                    // 7. Bottom CTA Banner
+                    _buildCtaBanner(context),
+                    const SizedBox(height: AppSpacing.xxxl),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildHeroBanner(BuildContext context) {
@@ -93,16 +98,25 @@ class AboutUsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 4.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.secondaryAmber.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(color: AppColors.secondaryAmber.withValues(alpha: 0.4)),
+              border: Border.all(
+                color: AppColors.secondaryAmber.withValues(alpha: 0.4),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.bolt_rounded, color: AppColors.secondaryAmber, size: 14.0),
+                const Icon(
+                  Icons.bolt_rounded,
+                  color: AppColors.secondaryAmber,
+                  size: 14.0,
+                ),
                 const SizedBox(width: 4.0),
                 Text(
                   'OUR PURPOSE & STORY',
@@ -114,17 +128,17 @@ class AboutUsScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12.0),
+          const SizedBox(height: 8.0),
           RichText(
             text: TextSpan(
               style: AppTypography.heading1.copyWith(
-                fontSize: 24.0,
+                fontSize: 20.0,
                 fontWeight: FontWeight.w800,
                 color: AppColors.surfaceWhite,
                 height: 1.25,
               ),
               children: const [
-                TextSpan(text: 'Crafting Joy for Every Classroom & '),
+                TextSpan(text: 'Crafting Joy for Every\nClassroom & '),
                 TextSpan(
                   text: 'Study Desk.',
                   style: TextStyle(color: AppColors.secondaryAmber),
@@ -137,16 +151,16 @@ class AboutUsScreen extends StatelessWidget {
             'To make authentic, school-approved uniforms, textbooks, and kits accessible to every parent and student across India.',
             style: AppTypography.bodyRegular.copyWith(
               color: AppColors.textMuted,
-              height: 1.4,
+              fontSize: 12,
             ),
           ),
-          const SizedBox(height: 20.0),
+          const SizedBox(height: 10.0),
           Row(
             children: [
               CustomButton.accentBuyNow(
                 text: 'EXPLORE SUPPLIES ➔',
                 isFullWidth: false,
-                height: 40.0,
+                height: 35.0,
                 onPressed: () => context.push('/products'),
               ),
             ],
@@ -253,7 +267,10 @@ class AboutUsScreen extends StatelessWidget {
         children: [
           Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10.0,
+                vertical: 4.0,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.categoryPillBg,
                 borderRadius: BorderRadius.circular(12.0),
@@ -271,14 +288,19 @@ class AboutUsScreen extends StatelessWidget {
           Center(
             child: Text(
               'The Journey of Book Vardi',
-              style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
+              style: AppTypography.heading1.copyWith(
+                fontSize: 18.0,
+                color: AppColors.textDark,
+              ),
             ),
           ),
           const SizedBox(height: 4.0),
           Center(
             child: Text(
               'From late-night study sessions to supplying over 50,000 students across India.',
-              style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.caption.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -325,9 +347,14 @@ class AboutUsScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6.0,
+                                vertical: 2.0,
+                              ),
                               decoration: BoxDecoration(
-                                color: AppColors.secondaryAmber.withValues(alpha: 0.2),
+                                color: AppColors.secondaryAmber.withValues(
+                                  alpha: 0.2,
+                                ),
                                 borderRadius: BorderRadius.circular(4.0),
                               ),
                               child: Text(
@@ -340,7 +367,9 @@ class AboutUsScreen extends StatelessWidget {
                             ),
                             Text(
                               item['tag']!,
-                              style: AppTypography.micro.copyWith(color: AppColors.textSecondary),
+                              style: AppTypography.micro.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
@@ -374,10 +403,26 @@ class AboutUsScreen extends StatelessWidget {
 
   Widget _buildCoreValues() {
     final values = [
-      {'icon': Icons.verified_user_outlined, 'title': 'Authenticity Guarantee', 'badge': 'VERIFIED'},
-      {'icon': Icons.favorite_border_rounded, 'title': 'Student-Centric Care', 'badge': 'POPULAR'},
-      {'icon': Icons.workspace_premium_outlined, 'title': 'Quality Assurance', 'badge': 'PREMIUM'},
-      {'icon': Icons.support_agent_rounded, 'title': 'Reliable Support', 'badge': '24/7'},
+      {
+        'icon': Icons.verified_user_outlined,
+        'title': 'Authenticity Guarantee',
+        'badge': 'VERIFIED',
+      },
+      {
+        'icon': Icons.favorite_border_rounded,
+        'title': 'Student-Centric Care',
+        'badge': 'POPULAR',
+      },
+      {
+        'icon': Icons.workspace_premium_outlined,
+        'title': 'Quality Assurance',
+        'badge': 'PREMIUM',
+      },
+      {
+        'icon': Icons.support_agent_rounded,
+        'title': 'Reliable Support',
+        'badge': '24/7',
+      },
     ];
 
     return Container(
@@ -391,7 +436,10 @@ class AboutUsScreen extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 4.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.categoryPillBg,
               borderRadius: BorderRadius.circular(12.0),
@@ -407,13 +455,18 @@ class AboutUsScreen extends StatelessWidget {
           const SizedBox(height: 8.0),
           Text(
             'Values We Will Never Compromise On',
-            style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
+            style: AppTypography.heading1.copyWith(
+              fontSize: 18.0,
+              color: AppColors.textDark,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4.0),
           Text(
             'Every pencil, spiral notebook, and geometry box we ship carries these 4 pillars.',
-            style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -443,9 +496,16 @@ class AboutUsScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(val['icon'] as IconData, color: AppColors.primaryNavy, size: 22.0),
+                        Icon(
+                          val['icon'] as IconData,
+                          color: AppColors.primaryNavy,
+                          size: 22.0,
+                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0,
+                            vertical: 2.0,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.categoryPillBg,
                             borderRadius: BorderRadius.circular(4.0),
@@ -516,7 +576,10 @@ class AboutUsScreen extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 4.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 4.0,
+            ),
             decoration: BoxDecoration(
               color: AppColors.categoryPillBg,
               borderRadius: BorderRadius.circular(12.0),
@@ -532,29 +595,35 @@ class AboutUsScreen extends StatelessWidget {
           const SizedBox(height: 8.0),
           Text(
             'Meet the Passionate Team',
-            style: AppTypography.heading1.copyWith(fontSize: 18.0, color: AppColors.textDark),
+            style: AppTypography.heading1.copyWith(
+              fontSize: 18.0,
+              color: AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 4.0),
           Text(
             'Designers, educators, and stationery lovers obsessed with creating the best learning experience.',
-            style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondary,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.lg),
-          ...team.map((member) => Container(
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.backgroundSlate,
-                  borderRadius: AppSpacing.roundedSmall,
-                  border: Border.all(color: AppColors.borderGray),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 52.0,
-                      height: 52.0,
-                      decoration: const BoxDecoration(
+          ...team.map(
+            (member) => Container(
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.backgroundSlate,
+                borderRadius: AppSpacing.roundedSmall,
+                border: Border.all(color: AppColors.borderGray),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 52.0,
+                    height: 52.0,
+                    decoration: const BoxDecoration(
                       color: AppColors.categoryPillBg,
                       shape: BoxShape.circle,
                     ),
@@ -596,7 +665,8 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            )),
+            ),
+          ),
         ],
       ),
     );
@@ -605,7 +675,7 @@ class AboutUsScreen extends StatelessWidget {
   Widget _buildTestimonialCard() {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.announcementDarkBg,
         borderRadius: AppSpacing.roundedMedium,
       ),
@@ -637,9 +707,7 @@ class AboutUsScreen extends StatelessWidget {
           ),
           Text(
             'Parent of Class 6 Student',
-            style: AppTypography.micro.copyWith(
-              color: AppColors.textMuted,
-            ),
+            style: AppTypography.micro.copyWith(color: AppColors.textMuted),
           ),
         ],
       ),

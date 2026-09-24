@@ -89,7 +89,7 @@ class MockOrdersRepoForHistory implements IOrdersRepository {
 }
 
 void main() {
-  final testUser = UserModel(
+  const testUser = UserModel(
     userId: 'user_123',
     name: 'Aditya Sharma',
     email: 'aditya@example.com',
@@ -100,7 +100,7 @@ void main() {
   final sampleOrder = OrderModel(
     orderId: '#BV-2026-9812',
     userId: 'user_123',
-    items: [
+    items: const [
       CartItemModel(
         productId: 'prod_uniform_1',
         productName: 'Boys Summer Uniform Set',
@@ -109,7 +109,7 @@ void main() {
         variantLabel: 'Size 28',
       ),
     ],
-    shippingAddress: AddressModel(
+    shippingAddress: const AddressModel(
       addressId: 'addr_1',
       fullName: 'Aditya Sharma',
       phone: '9876543210',

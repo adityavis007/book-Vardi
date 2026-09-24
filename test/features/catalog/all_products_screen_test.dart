@@ -282,7 +282,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Search uniforms, books, stationery...'),
+        find.text('Search books, uniforms, stationery...'),
         findsOneWidget,
       );
       expect(find.text('Filters'), findsOneWidget);

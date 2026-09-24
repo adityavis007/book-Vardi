@@ -44,7 +44,7 @@ class MockOrdersRepoForTracking implements IOrdersRepository {
 }
 
 void main() {
-  final sampleAddress = AddressModel(
+  const sampleAddress = AddressModel(
     addressId: 'addr_1',
     fullName: 'Aditya Sharma',
     phone: '9876543210',
@@ -54,14 +54,14 @@ void main() {
     pincode: '226028',
   );
 
-  final samplePricing = const PriceBreakupModel(
+  const samplePricing = PriceBreakupModel(
     subtotal: 798.0,
     deliveryCharge: 0.0,
     grandTotal: 798.0,
   );
 
   final sampleItems = [
-    CartItemModel(
+    const CartItemModel(
       productId: 'prod_uniform_1',
       productName: 'Boys Summer Uniform Set',
       unitPrice: 399.0,

@@ -7,19 +7,16 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/app_snackbar.dart';
 import '../../../../shared/widgets/shimmer_loading.dart';
 import '../../domain/product_model.dart';
 import '../../domain/school_model.dart';
 import '../controllers/catalog_controller.dart';
 import '../widgets/category_item.dart';
 import '../widgets/product_card.dart';
-import '../../../auth/domain/auth_state.dart';
-import '../../../auth/presentation/controllers/auth_controller.dart';
 import '../../../location/presentation/controllers/location_controller.dart';
-import '../../../location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../../../../core/guards/guest_guard.dart';
 import '../../../../core/guards/pending_action.dart';
-import '../../../cart/domain/cart_item_model.dart';
 import '../../../cart/domain/wishlist_item_model.dart';
 import '../../../cart/presentation/controllers/cart_controller.dart';
 import '../../../cart/presentation/controllers/wishlist_controller.dart';
@@ -127,22 +124,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     _bannerController = PageController();
     _startBannerTimer();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkAutoPromptLocation();
-    });
-  }
-
-  void _checkAutoPromptLocation() {
-    if (!mounted) return;
-    if (WidgetsBinding.instance.runtimeType.toString().contains('Test')) return;
-    final authState = ref.read(authControllerProvider);
-    final locationState = ref.read(locationControllerProvider);
-    if (authState.isAuthenticated &&
-        !authState.isGuest &&
-        !locationState.hasPromptedAutoThisSession) {
-      ref.read(locationControllerProvider.notifier).markPromptedThisSession();
-      LocationModalBottomSheet.show(context);
-    }
   }
 
   void _startBannerTimer() {
@@ -190,16 +171,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       onAuthenticated: () {
         ref.read(cartControllerProvider).addToCart(product);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Added ${product.title} to cart'),
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'VIEW CART',
-              textColor: AppColors.secondaryAmber,
-              onPressed: () => context.push('/cart'),
-            ),
-          ),
+        AppSnackBar.showCartSnackBar(
+          context,
+          productTitle: product.title,
         );
       },
     );
@@ -222,16 +196,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final wishlistItem = WishlistItemModel.fromProduct(product);
         await wishlistNotifier.toggleWishlist(wishlistItem);
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                isWishlisted
-                    ? 'Removed ${product.title} from wishlist'
-                    : 'Added ${product.title} to wishlist',
-              ),
-              duration: const Duration(seconds: 2),
-            ),
+        if (mounted && context.mounted) {
+          AppSnackBar.showWishlistSnackBar(
+            context,
+            productTitle: product.title,
+            isAdded: !isWishlisted,
           );
         }
       },
@@ -240,17 +209,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      if (WidgetsBinding.instance.runtimeType.toString().contains('Test')) return;
-      if (next.isAuthenticated && !next.isGuest) {
-        final locationState = ref.read(locationControllerProvider);
-        if (!locationState.hasPromptedAutoThisSession) {
-          ref.read(locationControllerProvider.notifier).markPromptedThisSession();
-          LocationModalBottomSheet.show(context);
-        }
-      }
-    });
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: RefreshIndicator(
@@ -796,9 +754,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: [
                     for (int i = 0; i < bundles.length; i++) ...[
-                      if (i > 0) const SizedBox(width: AppSpacing.md),
+                      if (i > 0) const SizedBox(width: 10.0),
                       ProductCard(
-                        width: 190.0,
+                        width: 156.0,
                         product: bundles[i],
                         isWishlisted: wishlistIdSet.contains(bundles[i].productId),
                         onTap: (p) {
@@ -822,8 +780,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: List.generate(
                   3,
                   (index) => const Padding(
-                    padding: EdgeInsets.only(right: AppSpacing.md),
-                    child: SizedBox(width: 190.0, child: ShimmerProductCard()),
+                    padding: EdgeInsets.only(right: 10.0),
+                    child: SizedBox(width: 156.0, child: ShimmerProductCard()),
                   ),
                 ),
               ),
@@ -899,10 +857,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 itemCount: products.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: AppSpacing.md,
-                  mainAxisSpacing: AppSpacing.md,
-                  childAspectRatio:
-                      0.45, // Guaranteed zero-overflow across 360px-428px
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 12.0,
+                  childAspectRatio: screenWidth <= 380 ? 0.53 : 0.57,
                 ),
                 itemBuilder: (context, index) {
                   final product = products[index];
@@ -928,9 +885,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               itemCount: 4,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: crossAxisCount,
-                crossAxisSpacing: AppSpacing.md,
-                mainAxisSpacing: AppSpacing.md,
-                childAspectRatio: 0.45,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 12.0,
+                childAspectRatio: screenWidth <= 380 ? 0.53 : 0.57,
               ),
               itemBuilder: (context, index) => const ShimmerProductCard(),
             ),

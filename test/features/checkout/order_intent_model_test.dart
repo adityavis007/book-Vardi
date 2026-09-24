@@ -16,25 +16,25 @@ void main() {
       pincode: '302001',
     );
 
-    final item1 = CartItemModel(
+    const item1 = CartItemModel(
       productId: 'prod_book_1',
       productName: 'Science Class 7',
       unitPrice: 350.0,
       quantity: 2,
     );
 
-    final item2 = CartItemModel(
+    const item2 = CartItemModel(
       productId: 'prod_uniform_1',
       productName: 'School Polo Shirt',
       unitPrice: 600.0,
       quantity: 1,
     );
 
-    final pricing = PriceBreakupModel.fromItems([item1, item2]);
+    final pricing = PriceBreakupModel.fromItems(const [item1, item2]);
 
     test('initializes with accurate properties and calculates totalItemCount', () {
       final intent = OrderIntentModel.create(
-        items: [item1, item2],
+        items: const [item1, item2],
         pricing: pricing,
         shippingAddress: address,
         isBuyNowBypass: false,
@@ -50,22 +50,22 @@ void main() {
 
     test('isReadyForPayment returns false if items empty or address is missing/invalid', () {
       final noAddressIntent = OrderIntentModel.create(
-        items: [item1],
-        pricing: PriceBreakupModel.fromItems([item1]),
+        items: const [item1],
+        pricing: PriceBreakupModel.fromItems(const [item1]),
         shippingAddress: null,
       );
       expect(noAddressIntent.isReadyForPayment, isFalse);
 
       final emptyItemsIntent = OrderIntentModel.create(
-        items: [],
+        items: const [],
         pricing: const PriceBreakupModel(deliveryCharge: 0, grandTotal: 0, subtotal: 0),
         shippingAddress: address,
       );
       expect(emptyItemsIntent.isReadyForPayment, isFalse);
 
       final invalidAddressIntent = OrderIntentModel.create(
-        items: [item1],
-        pricing: PriceBreakupModel.fromItems([item1]),
+        items: const [item1],
+        pricing: PriceBreakupModel.fromItems(const [item1]),
         shippingAddress: address.copyWith(phone: 'invalid_phone'),
       );
       expect(invalidAddressIntent.isReadyForPayment, isFalse);
@@ -73,8 +73,8 @@ void main() {
 
     test('supports Buy Now direct bypass session flag', () {
       final buyNowIntent = OrderIntentModel.create(
-        items: [item2],
-        pricing: PriceBreakupModel.fromItems([item2]),
+        items: const [item2],
+        pricing: PriceBreakupModel.fromItems(const [item2]),
         shippingAddress: address,
         isBuyNowBypass: true,
       );
@@ -85,7 +85,7 @@ void main() {
 
     test('roundtrip serialization toMap / fromMap produces identical entity', () {
       final intent = OrderIntentModel.create(
-        items: [item1, item2],
+        items: const [item1, item2],
         pricing: pricing,
         shippingAddress: address,
         isBuyNowBypass: true,
@@ -110,8 +110,8 @@ void main() {
 
     test('roundtrip serialization toJson / fromJson produces identical entity', () {
       final intent = OrderIntentModel.create(
-        items: [item1],
-        pricing: PriceBreakupModel.fromItems([item1]),
+        items: const [item1],
+        pricing: PriceBreakupModel.fromItems(const [item1]),
         shippingAddress: address,
       );
 
@@ -124,8 +124,8 @@ void main() {
 
     test('copyWith produces updated entity preserving unmodified attributes', () {
       final intent = OrderIntentModel.create(
-        items: [item1],
-        pricing: PriceBreakupModel.fromItems([item1]),
+        items: const [item1],
+        pricing: PriceBreakupModel.fromItems(const [item1]),
         paymentMethod: 'ONLINE',
       );
 

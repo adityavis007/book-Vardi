@@ -117,7 +117,7 @@ void main() {
       // Fields
       expect(find.text('FULL NAME'), findsOneWidget);
       expect(find.text('EMAIL ADDRESS'), findsOneWidget);
-      expect(find.text('MOBILE PHONE NUMBER'), findsOneWidget);
+      expect(find.textContaining('MOBILE PHONE NUMBER'), findsOneWidget);
       expect(find.text('STUDENT ROLL NO.'), findsOneWidget);
       expect(find.text('SCHOOL / INSTITUTION'), findsOneWidget);
       expect(find.text('CLASS / STANDARD'), findsOneWidget);

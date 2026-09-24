@@ -13,7 +13,10 @@ import '../../features/catalog/presentation/screens/search_screen.dart';
 import '../../features/cart/presentation/controllers/cart_controller.dart';
 import '../../features/cart/presentation/screens/cart_screen.dart';
 import '../../features/cart/presentation/screens/wishlist_screen.dart';
+import '../../features/checkout/domain/address_model.dart';
 import '../../features/checkout/domain/order_model.dart' as checkout;
+import '../../features/checkout/presentation/screens/add_address_screen.dart';
+import '../../features/checkout/presentation/screens/checkout_screen.dart';
 import '../../features/checkout/presentation/screens/order_confirmation_screen.dart';
 import '../../features/orders/presentation/screens/order_history_screen.dart';
 import '../../features/orders/presentation/screens/order_tracking_screen.dart';
@@ -25,6 +28,9 @@ import '../../features/location/presentation/controllers/location_controller.dar
 import '../../features/location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../../features/coupons/presentation/screens/coupons_screen.dart';
 import '../../features/about/presentation/screens/about_us_screen.dart';
+import '../../features/support/presentation/screens/help_support_screen.dart';
+import '../../features/legal/presentation/screens/terms_conditions_screen.dart';
+import '../../features/legal/presentation/screens/privacy_policy_screen.dart';
 import '../guards/admin_guard.dart';
 import '../../shared/widgets/app_scaffold_shell.dart';
 
@@ -154,10 +160,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
+        path: '/add-address',
+        name: 'addAddress',
+        builder: (context, state) {
+          final extra = state.extra;
+          AddressModel? initialAddress;
+          String? userId;
+          ValueChanged<AddressModel>? onAddressAdded;
+          if (extra is Map<String, dynamic>) {
+            initialAddress = extra['initialAddress'] as AddressModel?;
+            userId = extra['userId'] as String?;
+            onAddressAdded =
+                extra['onAddressAdded'] as ValueChanged<AddressModel>?;
+          } else if (extra is AddressModel) {
+            initialAddress = extra;
+          }
+          return AddAddressScreen(
+            userId: userId,
+            initialAddress: initialAddress,
+            onAddressAdded: onAddressAdded,
+          );
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
         path: '/checkout',
         name: 'checkout',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Checkout Stepper'))),
+        builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
         parentNavigatorKey: rootNavigatorKey,
@@ -216,6 +245,24 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/about',
         name: 'about',
         builder: (context, state) => const AboutUsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/help-support',
+        name: 'helpSupport',
+        builder: (context, state) => const HelpSupportScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/terms',
+        name: 'terms',
+        builder: (context, state) => const TermsConditionsScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: rootNavigatorKey,
+        path: '/privacy',
+        name: 'privacy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
       ),
 
       // Administrative Operations Portal Routes

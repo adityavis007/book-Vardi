@@ -51,7 +51,7 @@ void main() {
       orderId: '#BV-2026-9812',
       userId: 'user_test_123',
       intent: OrderIntentModel.create(
-        items: [sampleItem1, sampleItem2],
+        items: const [sampleItem1, sampleItem2],
         shippingAddress: sampleAddress,
         pricing: const PriceBreakupModel(
           subtotal: 950.0,
@@ -72,7 +72,7 @@ void main() {
       orderId: '#BV-2026-4321',
       userId: 'user_test_123',
       intent: OrderIntentModel.create(
-        items: [sampleItem1],
+        items: const [sampleItem1],
         shippingAddress: sampleAddress,
         pricing: const PriceBreakupModel(
           subtotal: 800.0,

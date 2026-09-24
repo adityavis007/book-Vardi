@@ -59,83 +59,194 @@ class ProductCard extends ConsumerWidget {
     return Container(
       width: width,
       decoration: BoxDecoration(
-        color: AppColors.surfaceWhite,
-        borderRadius: AppSpacing.roundedMedium,
-        border: Border.all(color: AppColors.borderGray, width: 1.0),
-        boxShadow: AppSpacing.elevationSm,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 6.0,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => onTap?.call(product),
-          borderRadius: AppSpacing.roundedMedium,
-          splashColor: AppColors.primaryNavy.withValues(alpha: 0.05),
-          highlightColor: AppColors.primaryNavy.withValues(alpha: 0.03),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1:1 Square Image Area with Badges Overlay
-              _buildImageSection(context, ref),
+              // 1:1.14 Product Image Section with Top Badges
+              AspectRatio(
+                aspectRatio: 1.14,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    // Product Image & Neutral Placeholder
+                    Container(
+                      color: const Color(0xFFF8FAFC),
+                      child: _buildProductImage(),
+                    ),
 
-              // Content & Pricing Details
+                    // Burgundy / Amber Discount Tag (Top Left)
+                    if (product.hasDiscount)
+                      Positioned(
+                        top: 6.0,
+                        left: 6.0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0,
+                            vertical: 2.5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF9F1239),
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: Text(
+                            '${product.discountPercentage}% OFF',
+                            style: const TextStyle(
+                              fontFamily: AppTypography.fontFamily,
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    // Circular White Heart Button (Top Right)
+                    Positioned(
+                      top: 6.0,
+                      right: 6.0,
+                      child: _buildWishlistButton(context, ref),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Product Info & Action Section (Compact Spacing Matching Wishlist)
               Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
+                padding: const EdgeInsets.fromLTRB(8.0, 6.0, 8.0, 8.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // School Name (Micro text, 1 line truncate)
-                    if (product.schoolName != null &&
-                        product.schoolName!.trim().isNotEmpty) ...[
-                      Text(
-                        product.schoolName!.trim(),
-                        style: AppTypography.micro.copyWith(
-                          color: AppColors.textSecondary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                    ],
-
-                    // Product Title (Body Medium, 2 line clamp)
+                    // Product Title (Bold, 1 line clamp)
                     Text(
                       product.name,
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textDark,
-                        fontWeight: FontWeight.w600,
-                        height: 1.25,
+                      style: const TextStyle(
+                        fontFamily: AppTypography.fontFamily,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0F172A),
+                        height: 1.2,
                       ),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
+                    const SizedBox(height: 2.0),
 
-                    // Target Grade Caption
-                    if (product.targetGrade != null &&
+                    // School / Grade Subtitle
+                    Text(
+                      product.schoolName != null &&
+                              product.schoolName!.trim().isNotEmpty
+                          ? product.schoolName!.trim()
+                          : (product.targetGrade != null &&
+                                  product.targetGrade!.trim().isNotEmpty
+                              ? _formatGrade(product.targetGrade!.trim())
+                              : 'All Schools'),
+                      style: const TextStyle(
+                        fontFamily: AppTypography.fontFamily,
+                        fontSize: 10.0,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF64748B),
+                        height: 1.15,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (product.schoolName != null &&
+                        product.schoolName!.trim().isNotEmpty &&
+                        product.targetGrade != null &&
                         product.targetGrade!.trim().isNotEmpty) ...[
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 1.0),
                       Text(
                         _formatGrade(product.targetGrade!.trim()),
-                        style: AppTypography.caption.copyWith(
-                          fontSize: 11.0,
-                          color: const Color(0xFF475569),
+                        style: const TextStyle(
+                          fontFamily: AppTypography.fontFamily,
+                          fontSize: 9.5,
+                          color: Color(0xFF94A3B8),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
+                    const SizedBox(height: 4.0),
 
-                    const SizedBox(height: AppSpacing.xs),
-
-                    // Price & MRP Strikethrough Row
+                    // Price Row
                     _buildPriceRow(),
+                    const SizedBox(height: 3.0),
 
-                    const SizedBox(height: AppSpacing.sm),
+                    // Rating + Stock Status Row
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // 5-Star Rating
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ...List.generate(5, (starIdx) {
+                                final bool isFilled = starIdx < 4;
+                                return Icon(
+                                  isFilled
+                                      ? Icons.star_rounded
+                                      : Icons.star_outline_rounded,
+                                  size: 10.5,
+                                  color: isFilled
+                                      ? const Color(0xFFF59E0B)
+                                      : const Color(0xFFCBD5E1),
+                                );
+                              }),
+                              const SizedBox(width: 2.0),
+                              const Text(
+                                '4.0',
+                                style: TextStyle(
+                                  fontFamily: AppTypography.fontFamily,
+                                  fontSize: 9.0,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8.0),
 
-                    // Outlined "ADD TO CART +" Button (H: 36px, Radius: 6px)
+                          // Stock Status
+                          Text(
+                            product.inStock
+                                ? 'In Stock'
+                                : 'Out of stock',
+                            style: TextStyle(
+                              fontFamily: AppTypography.fontFamily,
+                              fontSize: 9.0,
+                              fontWeight: FontWeight.w600,
+                              color: product.inStock
+                                  ? const Color(0xFF16A34A)
+                                  : const Color(0xFFEF4444),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6.0),
+
+                    // CTA Button (H: 30px, Rounded: 15px)
                     _buildAddToCartButton(context, ref),
                   ],
                 ),
@@ -154,62 +265,6 @@ class ProductCard extends ConsumerWidget {
       return grade;
     }
     return 'Class: $grade';
-  }
-
-  Widget _buildImageSection(BuildContext context, WidgetRef ref) {
-    return AspectRatio(
-      aspectRatio: 1.0,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background Placeholder & Image
-          Container(
-            color: AppColors.imagePlaceholder,
-            child: _buildProductImage(),
-          ),
-
-          // Top Badges Overlay (Top-8)
-          Positioned(
-            top: AppSpacing.sm,
-            left: AppSpacing.sm,
-            right: AppSpacing.sm,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Discount Tag Pill
-                if (product.hasDiscount)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6.0,
-                      vertical: 3.0,
-                    ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.secondaryAmber,
-                      borderRadius: AppSpacing.roundedMicro,
-                    ),
-                    child: Text(
-                      '${product.discountPercentage}% OFF',
-                      style: const TextStyle(
-                        fontFamily: AppTypography.fontFamily,
-                        fontSize: 10.0,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textDark,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  )
-                else
-                  const SizedBox.shrink(),
-
-                // Wishlist Heart Button (Protected by executeWithAuthGuard)
-                _buildWishlistButton(context, ref),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildProductImage() {
@@ -266,44 +321,46 @@ class ProductCard extends ConsumerWidget {
     return Semantics(
       button: true,
       label: isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist',
-      child: Material(
-        color: Colors.white.withValues(alpha: 0.92),
-        shape: const CircleBorder(),
-        elevation: 1.0,
-        shadowColor: Colors.black26,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: () {
-            executeWithAuthGuard(
-              context,
-              ref,
-              action: PendingAction(
-                type: PendingActionType.toggleWishlist,
-                productId: product.productId,
-              ),
-              onAuthenticated: () {
-                onToggleWishlist?.call(product);
-              },
-            );
-          },
-          child: Container(
-            width: 32.0,
-            height: 32.0,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.borderGray.withValues(alpha: 0.6),
-                width: 0.5,
-              ),
+      child: InkWell(
+        onTap: () {
+          executeWithAuthGuard(
+            context,
+            ref,
+            action: PendingAction(
+              type: PendingActionType.toggleWishlist,
+              productId: product.productId,
             ),
-            child: Center(
-              child: Icon(
-                isWishlisted ? Icons.favorite : Icons.favorite_border_rounded,
-                size: 18.0,
-                color: isWishlisted
-                    ? AppColors.destructiveRed
-                    : AppColors.textSecondary,
+            onAuthenticated: () {
+              onToggleWishlist?.call(product);
+            },
+          );
+        },
+        borderRadius: BorderRadius.circular(14.0),
+        child: Container(
+          width: 28.0,
+          height: 28.0,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white.withValues(alpha: 0.95),
+            border: Border.all(
+              color: const Color(0xFFE2E8F0),
+              width: 0.8,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 4.0,
+                offset: const Offset(0, 1),
               ),
+            ],
+          ),
+          child: Center(
+            child: Icon(
+              isWishlisted ? Icons.favorite : Icons.favorite_border_rounded,
+              size: 15.0,
+              color: isWishlisted
+                  ? AppColors.destructiveRed
+                  : const Color(0xFF64748B),
             ),
           ),
         ),
@@ -312,45 +369,40 @@ class ProductCard extends ConsumerWidget {
   }
 
   Widget _buildPriceRow() {
-    return Wrap(
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: AppSpacing.xs,
-      runSpacing: 2.0,
-      children: [
-        // Bold Effective Price
-        Text(
-          _formatPrice(product.effectivePrice),
-          style: const TextStyle(
-            fontFamily: AppTypography.fontFamily,
-            fontSize: 16.0,
-            fontWeight: FontWeight.w700,
-            color: AppColors.textDark,
-          ),
-        ),
-
-        // MRP Strikethrough if discounted
-        if (product.hasDiscount)
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      alignment: Alignment.centerLeft,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        children: [
+          // Bold Effective Price
           Text(
-            _formatPrice(product.basePrice),
+            _formatPrice(product.effectivePrice),
             style: const TextStyle(
               fontFamily: AppTypography.fontFamily,
-              fontSize: 12.0,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textMuted,
-              decoration: TextDecoration.lineThrough,
+              fontSize: 14.0,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0F172A),
             ),
           ),
 
-        // Out of stock label if unavailable
-        if (!product.inStock)
-          Text(
-            'Out of stock',
-            style: AppTypography.micro.copyWith(
-              color: AppColors.destructiveRed,
-              fontWeight: FontWeight.w600,
+          // MRP Strikethrough if discounted
+          if (product.hasDiscount) ...[
+            const SizedBox(width: 4.0),
+            Text(
+              _formatPrice(product.basePrice),
+              style: const TextStyle(
+                fontFamily: AppTypography.fontFamily,
+                fontSize: 11.0,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFEF4444),
+                decoration: TextDecoration.lineThrough,
+              ),
             ),
-          ),
-      ],
+          ],
+        ],
+      ),
     );
   }
 
@@ -358,7 +410,7 @@ class ProductCard extends ConsumerWidget {
     final bool canAddToCart = product.inStock;
 
     return SizedBox(
-      height: 36.0,
+      height: 30.0,
       width: double.infinity,
       child: OutlinedButton(
         onPressed: canAddToCart
@@ -380,25 +432,46 @@ class ProductCard extends ConsumerWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryNavy,
           disabledForegroundColor: AppColors.disabledText,
+          backgroundColor: canAddToCart
+              ? const Color(0xFFFDE047).withValues(alpha: 0.25)
+              : const Color(0xFFF1F5F9),
           side: BorderSide(
-            color: canAddToCart ? AppColors.primaryNavy : AppColors.disabledBg,
-            width: 1.0,
+            color: canAddToCart
+                ? const Color(0xFFEAB308)
+                : const Color(0xFFCBD5E1),
+            width: 0.8,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6.0),
+            borderRadius: BorderRadius.circular(15.0),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
         ),
-        child: Text(
-          canAddToCart ? 'ADD TO CART +' : 'OUT OF STOCK',
-          style: TextStyle(
-            fontFamily: AppTypography.fontFamily,
-            fontSize: 12.0,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.3,
-            color: canAddToCart
-                ? AppColors.primaryNavy
-                : AppColors.disabledText,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (canAddToCart) ...[
+                const Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 13.0,
+                  color: AppColors.primaryNavy,
+                ),
+                const SizedBox(width: 4.0),
+              ],
+              Text(
+                canAddToCart ? 'ADD TO CART +' : 'OUT OF STOCK',
+                style: TextStyle(
+                  fontFamily: AppTypography.fontFamily,
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.3,
+                  color: canAddToCart
+                      ? AppColors.primaryNavy
+                      : AppColors.disabledText,
+                ),
+              ),
+            ],
           ),
         ),
       ),

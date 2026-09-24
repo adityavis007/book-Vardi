@@ -7,6 +7,8 @@ import 'package:book_vardi/features/auth/domain/auth_state.dart';
 import 'package:book_vardi/features/auth/domain/user_model.dart';
 import 'package:book_vardi/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:book_vardi/features/auth/presentation/screens/profile_screen.dart';
+import 'package:book_vardi/features/checkout/domain/address_model.dart';
+import 'package:book_vardi/features/checkout/presentation/screens/address_step_screen.dart';
 
 class _MockAuthRepo implements IAuthRepository {
   bool signOutCalled = false;
@@ -55,6 +57,7 @@ void main() {
   Widget buildTestWidget({
     required AuthState authState,
     required _MockAuthRepo repo,
+    List<Override> extraOverrides = const [],
   }) {
     final router = GoRouter(
       initialLocation: '/profile',
@@ -83,6 +86,18 @@ void main() {
           path: '/admin',
           builder: (context, state) => const Scaffold(body: Text('Admin Mock Screen')),
         ),
+        GoRoute(
+          path: '/help-support',
+          builder: (context, state) => const Scaffold(body: Text('Help & Support Mock Screen')),
+        ),
+        GoRoute(
+          path: '/terms',
+          builder: (context, state) => const Scaffold(body: Text('Terms & Conditions Mock Screen')),
+        ),
+        GoRoute(
+          path: '/privacy',
+          builder: (context, state) => const Scaffold(body: Text('Privacy Policy Mock Screen')),
+        ),
       ],
     );
 
@@ -92,6 +107,7 @@ void main() {
         authControllerProvider.overrideWith(
           (ref) => _TestAuthController(authState, repo),
         ),
+        ...extraOverrides,
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -318,7 +334,7 @@ void main() {
       expect(repo.signOutCalled, isTrue);
     });
 
-    testWidgets('opening Help & Support dialog displays helpline info', (tester) async {
+    testWidgets('tapping Help & Support tile navigates to /help-support', (tester) async {
       tester.view.physicalSize = const Size(1080, 2400);
       tester.view.devicePixelRatio = 2.0;
       addTearDown(() {
@@ -339,12 +355,7 @@ void main() {
       await tester.tap(find.byKey(const Key('profile_help_support_tile')));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('support@bookvardi.com'), findsOneWidget);
-      expect(find.textContaining('+91 98765 43210'), findsOneWidget);
-
-      await tester.tap(find.text('Close'));
-      await tester.pumpAndSettle();
-      expect(find.textContaining('support@bookvardi.com'), findsNothing);
+      expect(find.text('Help & Support Mock Screen'), findsOneWidget);
     });
 
     testWidgets('tapping edit avatar badge navigates to /edit-profile', (tester) async {
@@ -445,6 +456,72 @@ void main() {
       // Seller Panel Login Card (Image 2 Website)
       expect(find.text('Seller Panel Login'), findsOneWidget);
       expect(find.text('LOGIN'), findsOneWidget);
+    });
+
+    testWidgets('tapping Address book opens Saved Delivery Addresses sheet with Edit button and launches Edit mode', (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 2.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      final repo = _MockAuthRepo();
+      const testUser = UserModel(
+        userId: 'usr_7830',
+        name: 'Aditya Vishwakarma',
+        phone: '9876543210',
+      );
+
+      const savedAddress = AddressModel(
+        addressId: 'addr_101',
+        fullName: 'Aditya Vishwakarma',
+        phone: '9876543210',
+        pincode: '333221',
+        addressLine1: 'h23/3, Hostel',
+        landmark: 'Near Renukoot',
+        city: 'Renukoot',
+        state: 'Uttar Pradesh',
+        addressType: 'Home',
+      );
+
+      await tester.pumpWidget(
+        buildTestWidget(
+          authState: const AuthState.authenticated(testUser),
+          repo: repo,
+          extraOverrides: [
+            savedAddressesStreamProvider.overrideWith(
+              (ref) => Stream.value([savedAddress]),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Address book tile
+      await tester.tap(find.text('Address book'));
+      await tester.pumpAndSettle();
+
+      // Bottom sheet header and saved address details rendered
+      expect(find.text('Saved Delivery Addresses'), findsOneWidget);
+      expect(find.text('Aditya Vishwakarma'), findsWidgets);
+      expect(find.text('HOME'), findsWidgets);
+      expect(find.byKey(const Key('edit_address_btn_addr_101')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('edit_address_btn_addr_101')),
+          matching: find.text('Edit'),
+        ),
+        findsOneWidget,
+      );
+
+      // Tap Edit button
+      await tester.tap(find.byKey(const Key('edit_address_btn_addr_101')));
+      await tester.pumpAndSettle();
+
+      // Navigated to Edit Delivery Address screen with prefilled details
+      expect(find.text('Edit Delivery Address'), findsOneWidget);
+      expect(find.byKey(const Key('save_address_button')), findsOneWidget);
     });
   });
 }

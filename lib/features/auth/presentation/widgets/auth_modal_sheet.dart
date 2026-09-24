@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../location/presentation/widgets/location_modal_bottom_sheet.dart';
 import '../controllers/auth_controller.dart';
 
 /// Authentication Mode enum matching pop-up segmented tab switch
@@ -165,6 +166,7 @@ class _AuthModalBottomSheetState extends ConsumerState<AuthModalBottomSheet> {
         if (!mounted) return;
         widget.onSuccess?.call();
         Navigator.of(context).pop(true);
+        LocationModalBottomSheet.show(context);
       },
     );
   }
@@ -184,7 +186,7 @@ class _AuthModalBottomSheetState extends ConsumerState<AuthModalBottomSheet> {
     });
 
     final authCtrl = ref.read(authControllerProvider.notifier);
-    final effectiveVid = _verificationId ?? 'test_vid_6387977830';
+    final effectiveVid = _verificationId ?? 'test_vid_${_phoneController.text.trim()}';
     final success = await authCtrl.verifyOtp(
       verificationId: effectiveVid,
       smsCode: _otpController.text.trim(),
@@ -199,6 +201,7 @@ class _AuthModalBottomSheetState extends ConsumerState<AuthModalBottomSheet> {
     if (success) {
       widget.onSuccess?.call();
       Navigator.of(context).pop(true);
+      LocationModalBottomSheet.show(context);
     } else {
       final authState = ref.read(authControllerProvider);
       setState(() {

@@ -29,7 +29,7 @@ void main() {
   });
 
   group('OrderModel & Tracking Timeline Tests (TASK-053)', () {
-    final sampleAddress = AddressModel(
+    const sampleAddress = AddressModel(
       addressId: 'addr_1',
       fullName: 'Sunita Sharma',
       phone: '9876543210',
@@ -39,14 +39,14 @@ void main() {
       pincode: '226028',
     );
 
-    final samplePricing = PriceBreakupModel(
+    const samplePricing = PriceBreakupModel(
       subtotal: 999.0,
       deliveryCharge: 0.0,
       grandTotal: 999.0,
     );
 
     final sampleItems = [
-      CartItemModel(
+      const CartItemModel(
         productId: 'prod_uniform_boys_summer',
         productName: 'Boys Summer Uniform Set',
         unitPrice: 399.0,

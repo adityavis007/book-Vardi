@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,10 @@ import '../widgets/auth_modal_sheet.dart';
 import '../../../cart/presentation/controllers/cart_controller.dart';
 import '../../../cart/presentation/controllers/wishlist_controller.dart';
 import '../../../orders/data/order_repository.dart';
+import '../../../checkout/domain/address_model.dart';
+import '../../../checkout/presentation/screens/add_address_screen.dart';
 import '../../../checkout/presentation/screens/address_step_screen.dart';
+import '../../../coupons/presentation/screens/coupons_screen.dart';
 
 /// 1:1 Profile Screen matching user layout wireframe (Image 1) and
 /// Book Vardi website colors, theme, and components (Image 2).
@@ -134,7 +138,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     key: const Key('profile_coupons_tile'),
                     icon: Icons.local_offer_outlined,
                     title: 'Coupons & Offers',
-                    onTap: () => _showCouponsDialog(context),
+                    onTap: () => context.push('/coupons'),
                   ),
                 ],
               ),
@@ -160,19 +164,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     key: const Key('profile_help_support_tile'),
                     icon: Icons.headset_mic_outlined,
                     title: 'Help & Support',
-                    onTap: () => _showHelpSupportDialog(context),
+                    onTap: () => context.push('/help-support'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_terms_tile'),
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
-                    onTap: () => _showTermsDialog(context),
+                    onTap: () => context.push('/terms'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_privacy_tile'),
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacy Policy',
-                    onTap: () => _showPrivacyPolicyDialog(context),
+                    onTap: () => context.push('/privacy'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_logout_button'),
@@ -219,19 +223,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     key: const Key('profile_help_support_tile'),
                     icon: Icons.headset_mic_outlined,
                     title: 'Help & Support',
-                    onTap: () => _showHelpSupportDialog(context),
+                    onTap: () => context.push('/help-support'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_terms_tile'),
                     icon: Icons.description_outlined,
                     title: 'Terms & Conditions',
-                    onTap: () => _showTermsDialog(context),
+                    onTap: () => context.push('/terms'),
                   ),
                   _buildNavTile(
                     key: const Key('profile_privacy_tile'),
                     icon: Icons.privacy_tip_outlined,
                     title: 'Privacy Policy',
-                    onTap: () => _showPrivacyPolicyDialog(context),
+                    onTap: () => context.push('/privacy'),
                   ),
                 ],
               ),
@@ -317,16 +321,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                         ],
                       ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        initial,
-                        style: const TextStyle(
-                          fontFamily: AppTypography.fontFamily,
-                          fontSize: 28.0,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFFFBBF24),
-                        ),
-                      ),
+                      child: _buildAvatarContent(user, initial),
                     ),
                     // Oval Amber Edit Pill Badge (Matching User Wireframe Sketch)
                     Positioned(
@@ -575,7 +570,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               },
               borderRadius: BorderRadius.circular(16.0),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                  vertical: 4.0,
+                ),
                 child: AnimatedRotation(
                   turns: _isCardExpanded ? 0.5 : 0.0,
                   duration: const Duration(milliseconds: 250),
@@ -589,6 +587,50 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAvatarContent(UserModel user, String initial) {
+    if (user.photoUrl != null && user.photoUrl!.isNotEmpty) {
+      if (user.photoUrl!.startsWith('http://') || user.photoUrl!.startsWith('https://')) {
+        return ClipOval(
+          child: Image.network(
+            user.photoUrl!,
+            width: 68.0,
+            height: 68.0,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildInitialAvatar(initial),
+          ),
+        );
+      } else {
+        final file = File(user.photoUrl!);
+        if (file.existsSync()) {
+          return ClipOval(
+            child: Image.file(
+              file,
+              width: 68.0,
+              height: 68.0,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _buildInitialAvatar(initial),
+            ),
+          );
+        }
+      }
+    }
+    return _buildInitialAvatar(initial);
+  }
+
+  Widget _buildInitialAvatar(String initial) {
+    return Center(
+      child: Text(
+        initial,
+        style: const TextStyle(
+          fontFamily: AppTypography.fontFamily,
+          fontSize: 28.0,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFFFBBF24),
+        ),
       ),
     );
   }
@@ -1111,71 +1153,154 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           );
                         }
 
-                        return ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 320.0),
-                          child: ListView.separated(
-                            shrinkWrap: true,
-                            itemCount: addresses.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 8.0),
-                            itemBuilder: (ctx, index) {
-                              final addr = addresses[index];
-                              return Container(
-                                padding: const EdgeInsets.all(12.0),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  border: Border.all(
-                                    color: const Color(0xFFE2E8F0),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxHeight: 280.0),
+                              child: ListView.separated(
+                                shrinkWrap: true,
+                                itemCount: addresses.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 8.0),
+                                itemBuilder: (ctx, index) {
+                                  final addr = addresses[index];
+                                  return Container(
+                                    padding: const EdgeInsets.all(12.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      border: Border.all(
+                                        color: const Color(0xFFE2E8F0),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          addr.fullName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 13.0,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Flexible(
+                                                    child: Text(
+                                                      addr.fullName,
+                                                      style: const TextStyle(
+                                                        fontWeight: FontWeight.w700,
+                                                        fontSize: 13.0,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 6.0),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 6.0,
+                                                      vertical: 1.5,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFFDCFCE7),
+                                                      borderRadius: BorderRadius.circular(
+                                                        4.0,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      addr.addressType.toUpperCase(),
+                                                      style: const TextStyle(
+                                                        fontSize: 9.0,
+                                                        fontWeight: FontWeight.w700,
+                                                        color: Color(0xFF15803D),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 2.0),
+                                              Text(
+                                                addr.formattedAddress,
+                                                style: const TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Color(0xFF64748B),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        const SizedBox(width: 6.0),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 6.0,
-                                            vertical: 1.5,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFDCFCE7),
-                                            borderRadius: BorderRadius.circular(
-                                              4.0,
+                                        const SizedBox(width: 8.0),
+                                        InkWell(
+                                          key: Key('edit_address_btn_${addr.addressId}'),
+                                          onTap: () {
+                                            Navigator.of(sheetCtx).pop();
+                                            _openAddAddressModal(
+                                              context,
+                                              userId,
+                                              initialAddress: addr,
+                                            );
+                                          },
+                                          borderRadius: BorderRadius.circular(6.0),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0,
+                                              vertical: 4.0,
                                             ),
-                                          ),
-                                          child: Text(
-                                            addr.addressType.toUpperCase(),
-                                            style: const TextStyle(
-                                              fontSize: 9.0,
-                                              fontWeight: FontWeight.w700,
-                                              color: Color(0xFF15803D),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFF1F5F9),
+                                              borderRadius: BorderRadius.circular(6.0),
+                                              border: Border.all(
+                                                color: const Color(0xFFCBD5E1),
+                                              ),
+                                            ),
+                                            child: const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.edit_outlined,
+                                                  size: 13.0,
+                                                  color: Color(0xFF0F291E),
+                                                ),
+                                                SizedBox(width: 4.0),
+                                                Text(
+                                                  'Edit',
+                                                  style: TextStyle(
+                                                    fontSize: 11.0,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Color(0xFF0F291E),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 2.0),
-                                    Text(
-                                      addr.formattedAddress,
-                                      style: const TextStyle(
-                                        fontSize: 12.0,
-                                        color: Color(0xFF64748B),
-                                      ),
-                                    ),
-                                  ],
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 12.0),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF0F291E),
+                                  side: const BorderSide(color: Color(0xFF0F291E)),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
                                 ),
-                              );
-                            },
-                          ),
+                                icon: const Icon(Icons.add_rounded, size: 18.0),
+                                label: const Text(
+                                  'Add New Address',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(sheetCtx).pop();
+                                  _openAddAddressModal(context, userId);
+                                },
+                              ),
+                            ),
+                          ],
                         );
                       },
                       loading: () => const Center(
@@ -1204,12 +1329,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _openAddAddressModal(BuildContext context, String userId) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => AddAddressBottomSheet(userId: userId),
+  void _openAddAddressModal(
+    BuildContext context,
+    String userId, {
+    AddressModel? initialAddress,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => AddAddressScreen(
+          userId: userId,
+          initialAddress: initialAddress,
+        ),
+      ),
     );
   }
 
@@ -1461,36 +1592,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         content: const Text(
           'Are you an affiliated school uniform manufacturer or book distributor? Access the web seller panel at seller.bookvardi.com.',
           style: TextStyle(fontSize: 13.0, color: Color(0xFF64748B)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showAboutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        title: const Text(
-          'About Book Vardi',
-          style: TextStyle(fontWeight: FontWeight.w800),
-        ),
-        content: const Text(
-          'Book Vardi is your trusted partner for official school uniforms, NCERT book bundles, and curated stationery kits delivered directly to your doorstep.',
-          style: TextStyle(
-            fontSize: 13.0,
-            color: Color(0xFF64748B),
-            height: 1.4,
-          ),
         ),
         actions: [
           TextButton(
